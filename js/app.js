@@ -1,18 +1,23 @@
 /**
- * main.js — Punto de entrada. Inicializa los módulos y coordina el estado de la página.
+ * app.js — Punto de entrada de la aplicación.
+ *
+ * Inicializa cada feature y coordina el estado compartido (catálogo cargado,
+ * categoría activa). Los módulos de features no se conocen entre sí: se
+ * comunican a través de este archivo.
  */
-import { CONFIG } from './config.js';
-import { initTheme } from './theme.js';
-import { initNav } from './nav.js';
-import { fetchProducts } from './api.js';
+import { CONFIG } from './core/config.js';
+import { fetchProducts } from './core/api.js';
+import { initStoreInfo } from './features/store-info.js';
+import { initTheme } from './features/theme.js';
+import { initNav } from './features/nav.js';
 import {
   renderSkeletons,
   renderProducts,
   renderError,
   renderCategories,
   categoryLabel,
-} from './catalog.js';
-import { pluralize } from './utils.js';
+} from './features/catalog.js';
+import { pluralize } from './lib/utils.js';
 
 const dom = {
   grid: document.querySelector('[data-product-grid]'),
@@ -20,33 +25,14 @@ const dom = {
   categories: document.querySelector('[data-category-grid]'),
   activeFilter: document.querySelector('[data-active-filter]'),
   activeFilterLabel: document.querySelector('[data-active-filter-label]'),
+  newArrivals: document.querySelector('[data-new-arrivals]'),
   catalogSection: document.getElementById('catalogo'),
 };
 
 const state = {
   products: [],
-  category: null, // en el paso 4 este estado pasa a filters.js (categoría + búsqueda + orden)
+  category: null,
 };
-
-/** Vuelca los datos de config.js en el HTML (nombre, año, enlaces). */
-function applyConfig() {
-  document.querySelectorAll('[data-store-name]').forEach((el) => {
-    el.textContent = CONFIG.storeName;
-  });
-
-  document.querySelectorAll('[data-year]').forEach((el) => {
-    el.textContent = new Date().getFullYear();
-  });
-
-  document.querySelectorAll('[data-whatsapp-link]').forEach((el) => {
-    el.href = `https://wa.me/${CONFIG.whatsappNumber}`;
-  });
-
-  document.querySelectorAll('[data-dev-link]').forEach((el) => {
-    el.href = CONFIG.developer.url;
-    el.textContent = CONFIG.developer.name;
-  });
-}
 
 /* ------------------------------ Catálogo ------------------------------ */
 
@@ -76,18 +62,32 @@ function setCategory(category, { scroll = false } = {}) {
   if (scroll) dom.catalogSection.scrollIntoView();
 }
 
+/** Novedades: productos marcados como "nuevo", y si faltan, los agregados más recientemente. */
+function renderNewArrivals() {
+  if (!dom.newArrivals) return;
+
+  const byDate = [...state.products].sort((a, b) => String(b.addedAt).localeCompare(String(a.addedAt)));
+  const tagged = byDate.filter((product) => product.tags?.includes('nuevo'));
+  const rest = byDate.filter((product) => !product.tags?.includes('nuevo'));
+
+  renderProducts(dom.newArrivals, [...tagged, ...rest].slice(0, CONFIG.catalog.newArrivalsLimit));
+}
+
 async function loadCatalog() {
   renderSkeletons(dom.grid);
+  if (dom.newArrivals) renderSkeletons(dom.newArrivals, 4);
   dom.count.textContent = 'Cargando…';
 
   try {
     state.products = await fetchProducts();
     renderCategories(dom.categories, state.products, state.category);
     updateCatalog();
+    renderNewArrivals();
   } catch (error) {
     console.error('[catálogo]', error);
     dom.count.textContent = '';
     renderError(dom.grid, loadCatalog);
+    if (dom.newArrivals) dom.newArrivals.closest('section').hidden = true;
   }
 }
 
@@ -109,8 +109,10 @@ function initCatalog() {
   loadCatalog();
 }
 
+/* -------------------------------- Inicio -------------------------------- */
+
 function init() {
-  applyConfig();
+  initStoreInfo();
   initTheme(document.querySelector('[data-theme-toggle]'));
   initNav();
   initCatalog();

@@ -1,11 +1,13 @@
 /**
- * catalog.js — Renderizado del catálogo: tarjetas, skeletons, estados y categorías.
- * Solo dibuja: no decide QUÉ productos mostrar (eso lo hacen main.js / filters.js).
+ * features/catalog.js — Renderizado del catálogo: tarjetas, skeletons, estados y categorías.
+ *
+ * Es una capa de presentación pura: recibe datos y dibuja. No decide QUÉ productos
+ * mostrar; esa lógica vive en app.js (y en el módulo de filtros).
  */
-import { CONFIG } from './config.js';
-import { formatPrice, escapeHTML, discountPercent, pluralize } from './utils.js';
+import { CONFIG } from '../core/config.js';
+import { formatPrice, escapeHTML, discountPercent, pluralize } from '../lib/utils.js';
 
-const LOW_STOCK = 3;
+const LOW_STOCK = CONFIG.commerce.lowStockThreshold;
 
 const ICONS = {
   bag: '<svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14l-1.2 11.1a2 2 0 0 1-2 1.9H8.2a2 2 0 0 1-2-1.9z"/><path d="M9 7V6a3 3 0 0 1 6 0v1"/></svg>',
@@ -19,7 +21,7 @@ const TAGS = {
 };
 
 export const categoryLabel = (id) =>
-  CONFIG.categories.find((category) => category.id === id)?.label ?? id;
+  CONFIG.catalog.categories.find((category) => category.id === id)?.label ?? id;
 
 /* ----------------------------- Plantillas ----------------------------- */
 
@@ -181,7 +183,7 @@ function renderState(grid, { icon, title, text, actionLabel, onAction }) {
  * al recibir el catálogo agrega la cantidad de títulos de cada una.
  */
 export function renderCategories(container, products = [], activeId = null) {
-  container.innerHTML = CONFIG.categories
+  container.innerHTML = CONFIG.catalog.categories
     .map((category) => {
       const count = products.filter((p) => p.category === category.id).length;
       const countText = products.length ? pluralize(count, 'título', 'títulos') : '&nbsp;';

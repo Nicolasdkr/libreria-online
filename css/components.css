@@ -160,9 +160,6 @@
     var(--shadow-lg);
 }
 
-.cover[hidden] {
-  display: none;
-}
 
 /* Trama halftone sutil sobre la portada */
 .cover::after {

@@ -1,15 +1,15 @@
 /**
- * utils.js — Funciones puras y reutilizables.
+ * lib/utils.js — Funciones puras y reutilizables (sin acceso al DOM).
  */
-import { CONFIG } from './config.js';
+import { CONFIG } from '../core/config.js';
 
-const priceFormatter = new Intl.NumberFormat(CONFIG.locale, {
+const priceFormatter = new Intl.NumberFormat(CONFIG.commerce.locale, {
   style: 'currency',
-  currency: CONFIG.currency,
+  currency: CONFIG.commerce.currency,
   maximumFractionDigits: 0,
 });
 
-/** 18990 → "$18.990" */
+/** 18990 → "$18.990" (según locale y moneda configurados) */
 export const formatPrice = (value) => priceFormatter.format(value);
 
 /** Escapa texto antes de insertarlo como HTML (evita inyección desde los datos). */
@@ -44,4 +44,10 @@ export const pluralize = (count, singular, plural) =>
 export function discountPercent(price, oldPrice) {
   if (!oldPrice || oldPrice <= price) return 0;
   return Math.round((1 - price / oldPrice) * 100);
+}
+
+/** Enlace de WhatsApp con mensaje opcional. */
+export function whatsappUrl(number, message = '') {
+  const text = message ? `?text=${encodeURIComponent(message)}` : '';
+  return `https://wa.me/${number}${text}`;
 }

@@ -1,0 +1,114 @@
+/* ==========================================================================
+   tokens.css — Identidad visual de la tienda (design tokens)
+   --------------------------------------------------------------------------
+   Este es el ÚNICO archivo CSS que necesitas editar para aplicar la marca de
+   un cliente: colores, tipografías, radios y sombras. El resto de los estilos
+   consume estas variables, así que un cambio aquí se propaga a toda la tienda.
+
+   · Tema claro: :root
+   · Tema oscuro: se define dos veces (preferencia del sistema y elección manual).
+     Si cambias un color oscuro, cámbialo en ambos bloques.
+   · Si cambias las fuentes, actualiza también el <link> de Google Fonts en index.html.
+   ========================================================================== */
+
+/* ---------- Tema claro (por defecto) ---------- */
+:root {
+  color-scheme: light;
+
+  /* Marca */
+  --color-accent:       #c8402a;  /* color principal: botones, enlaces, precios destacados */
+  --color-accent-hover: #a83421;
+  --color-on-accent:    #ffffff;  /* texto sobre el color principal */
+  --color-secondary:    #1f4e79;
+
+  /* Superficies y texto */
+  --color-bg:          #faf7f2;
+  --color-surface:     #ffffff;
+  --color-surface-2:   #f1ece3;
+  --color-text:        #1c1917;
+  --color-text-muted:  #5f5850;
+  --color-border:      #e2dacd;
+
+  /* Estados */
+  --color-success: #2f7d4f;
+  --color-focus:   #1f6feb;
+
+  /* Tipografía */
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --fs-sm:   0.875rem;
+  --fs-base: 1rem;
+  --fs-md:   clamp(1.05rem, 1rem + 0.3vw, 1.2rem);
+  --fs-lg:   clamp(1.25rem, 1.1rem + 0.8vw, 1.6rem);
+  --fs-xl:   clamp(1.6rem, 1.3rem + 1.5vw, 2.4rem);
+  --fs-2xl:  clamp(2.2rem, 1.6rem + 3vw, 4rem);
+
+  /* Espaciado */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: clamp(3rem, 2rem + 4vw, 6rem);
+
+  /* Forma y profundidad */
+  --radius-sm: 6px;
+  --radius:    12px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+  --shadow-sm: 0 1px 2px rgb(28 25 23 / 0.06), 0 1px 3px rgb(28 25 23 / 0.08);
+  --shadow:    0 4px 12px rgb(28 25 23 / 0.08), 0 2px 4px rgb(28 25 23 / 0.06);
+  --shadow-lg: 0 18px 40px rgb(28 25 23 / 0.14);
+
+  /* Layout y movimiento */
+  --container: 1200px;
+  --gutter: clamp(1rem, 0.5rem + 2vw, 2rem);
+  --header-h: 68px;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --dur: 200ms;
+}
+
+/* ---------- Tema oscuro: preferencia del sistema ---------- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --color-accent:       #ff6b4a;
+    --color-accent-hover: #ff8669;
+    --color-on-accent:    #1a0d08;
+    --color-secondary:    #7fb3e6;
+    --color-bg:          #14120f;
+    --color-surface:     #1e1b17;
+    --color-surface-2:   #28241f;
+    --color-text:        #f2ede4;
+    --color-text-muted:  #b0a798;
+    --color-border:      #38322b;
+    --color-success: #5cc48a;
+    --color-focus:   #79b8ff;
+    --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+    --shadow:    0 4px 14px rgb(0 0 0 / 0.45);
+    --shadow-lg: 0 18px 40px rgb(0 0 0 / 0.55);
+  }
+}
+
+/* ---------- Tema oscuro: elección manual ---------- */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-accent:       #ff6b4a;
+  --color-accent-hover: #ff8669;
+  --color-on-accent:    #1a0d08;
+  --color-secondary:    #7fb3e6;
+  --color-bg:          #14120f;
+  --color-surface:     #1e1b17;
+  --color-surface-2:   #28241f;
+  --color-text:        #f2ede4;
+  --color-text-muted:  #b0a798;
+  --color-border:      #38322b;
+  --color-success: #5cc48a;
+  --color-focus:   #79b8ff;
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow:    0 4px 14px rgb(0 0 0 / 0.45);
+  --shadow-lg: 0 18px 40px rgb(0 0 0 / 0.55);
+}

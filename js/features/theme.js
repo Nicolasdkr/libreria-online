@@ -1,30 +1,17 @@
 /**
- * theme.js — Modo claro/oscuro.
+ * features/theme.js — Modo claro/oscuro.
+ *
  * - Sin elección guardada: sigue la preferencia del sistema (y reacciona si cambia).
  * - Con elección manual: se guarda en localStorage y tiene prioridad.
  * El tema inicial lo aplica un script inline en <head> para evitar el destello.
  */
-import { CONFIG } from './config.js';
+import { STORAGE_KEYS } from '../core/config.js';
+import { storage } from '../core/storage.js';
 
 const root = document.documentElement;
 const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
 
-function getSavedTheme() {
-  try {
-    const value = localStorage.getItem(CONFIG.storageKeys.theme);
-    return value === 'dark' || value === 'light' ? value : null;
-  } catch {
-    return null;
-  }
-}
-
-function saveTheme(theme) {
-  try {
-    localStorage.setItem(CONFIG.storageKeys.theme, theme);
-  } catch {
-    /* almacenamiento no disponible: el cambio vale solo para esta sesión */
-  }
-}
+const isTheme = (value) => value === 'dark' || value === 'light';
 
 /** Tema que se está viendo realmente (elección manual o, si no hay, el del sistema). */
 export function getEffectiveTheme() {
@@ -45,12 +32,12 @@ export function initTheme(button) {
   button.addEventListener('click', () => {
     const next = getEffectiveTheme() === 'dark' ? 'light' : 'dark';
     root.dataset.theme = next;
-    saveTheme(next);
+    storage.set(STORAGE_KEYS.theme, next);
     updateToggle(button);
   });
 
   // Si el usuario nunca eligió, seguimos al sistema en vivo.
   systemDark.addEventListener('change', () => {
-    if (!getSavedTheme()) updateToggle(button);
+    if (!isTheme(storage.get(STORAGE_KEYS.theme))) updateToggle(button);
   });
 }

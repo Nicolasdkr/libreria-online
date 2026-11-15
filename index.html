@@ -3,44 +3,56 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- SEO: estos textos los leen buscadores y redes sociales sin ejecutar JS,
+       por eso se editan aquí y no en store.config.js (ver docs/CUSTOMIZATION.md) -->
   <title>Tinta &amp; Viñeta · Librería y Cómics Online</title>
   <meta name="description" content="Librería online de libros, manga, cómics y novela gráfica. Explora el catálogo, arma tu carrito y haz tu pedido por WhatsApp." />
+  <meta name="generator" content="Librería Online Storefront 0.4.0" />
   <meta name="theme-color" content="#faf7f2" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#14120f" media="(prefers-color-scheme: dark)" />
 
-  <!-- Open Graph (vista previa al compartir el enlace) -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Tinta & Viñeta · Librería y Cómics Online" />
   <meta property="og:description" content="Libros, manga y cómics con pedido directo por WhatsApp." />
-  <meta property="og:image" content="assets/img/screenshots/og-cover.png" />
+  <meta property="og:image" content="assets/img/og-cover.png" />
 
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 
-  <!-- Aplica el tema guardado ANTES de pintar, para evitar el destello de tema incorrecto -->
+  <!-- Aplica el tema guardado ANTES de pintar para evitar el destello de tema incorrecto.
+       La clave debe coincidir con STORAGE_KEYS.theme en js/core/config.js -->
   <script>
     (function () {
       try {
-        var t = localStorage.getItem('tv-theme');
+        var t = JSON.parse(localStorage.getItem('storefront.theme'));
         if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
-      } catch (e) { /* almacenamiento bloqueado: se usa la preferencia del sistema */ }
+      } catch (e) { /* sin almacenamiento: se usa la preferencia del sistema */ }
     })();
   </script>
 
-  <!-- Tipografías: Fraunces (títulos editoriales) + Inter (texto) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" />
 
+  <link rel="stylesheet" href="css/tokens.css" />
   <link rel="stylesheet" href="css/base.css" />
   <link rel="stylesheet" href="css/layout.css" />
   <link rel="stylesheet" href="css/components.css" />
   <link rel="stylesheet" href="css/catalog.css" />
   <link rel="stylesheet" href="css/utilities.css" />
 
-  <script type="module" src="js/main.js"></script>
+  <script type="module" src="js/app.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#contenido">Saltar al contenido</a>
+
+  <!-- Barra de modo demo (se activa con demo.enabled en store.config.js) -->
+  <div class="demo-bar" data-demo-bar hidden>
+    <div class="container demo-bar__inner">
+      <p data-demo-message></p>
+      <a class="demo-bar__cta" data-demo-cta target="_blank" rel="noopener"></a>
+    </div>
+  </div>
 
   <!-- ============================ HEADER ============================ -->
   <header class="site-header" id="inicio" data-header>
@@ -98,7 +110,7 @@
   </header>
 
   <main id="contenido">
-    <!-- ============================ HERO ============================ -->
+    <!-- ============================= HERO ============================= -->
     <section class="hero" aria-labelledby="hero-title">
       <div class="container hero__grid">
         <div class="hero__copy stack" style="--stack-gap: var(--space-5)">
@@ -172,7 +184,6 @@
           <p class="catalog-count" data-results-count aria-live="polite"></p>
         </div>
 
-        <!-- Paso 4: aquí va la barra de filtros (búsqueda, orden, precio) -->
         <div class="active-filter" data-active-filter hidden>
           <span>Mostrando: <strong data-active-filter-label></strong></span>
           <button class="btn btn--ghost btn--sm" type="button" data-clear-filter>Ver todo</button>
@@ -182,16 +193,39 @@
       </div>
     </section>
 
-    <!-- Paso 7: carrusel de novedades -->
+    <!-- =========================== NOVEDADES =========================== -->
     <section class="section" id="novedades" aria-labelledby="novedades-title">
-      <div class="container section-head">
-        <h2 id="novedades-title">Novedades</h2>
+      <div class="container">
+        <div class="section-head">
+          <p class="eyebrow">Recién llegados</p>
+          <h2 id="novedades-title">Novedades de la semana</h2>
+        </div>
+        <div class="product-rail" data-new-arrivals aria-busy="true" tabindex="0" aria-label="Novedades: desliza para ver más"></div>
       </div>
     </section>
 
+    <!-- =========================== CONTACTO =========================== -->
     <section class="section" id="contacto" aria-labelledby="contacto-title">
-      <div class="container section-head">
-        <h2 id="contacto-title">Contacto</h2>
+      <div class="container contact">
+        <div class="section-head">
+          <p class="eyebrow">Contacto</p>
+          <h2 id="contacto-title">¿Buscas un título que no está en el catálogo?</h2>
+          <p class="lead">Escríbenos y lo conseguimos por encargo. Respondemos durante el horario de atención.</p>
+          <div class="cluster">
+            <a class="btn btn--primary btn--lg" href="#" data-whatsapp-link target="_blank" rel="noopener">Escribir por WhatsApp</a>
+          </div>
+        </div>
+
+        <div class="contact__details">
+          <div>
+            <h3>Dónde y cómo</h3>
+            <ul role="list" data-store-contact></ul>
+          </div>
+          <div>
+            <h3>Horario</h3>
+            <ul class="footer-hours" role="list" data-store-hours></ul>
+          </div>
+        </div>
       </div>
     </section>
   </main>
@@ -207,7 +241,7 @@
           </svg>
           <span data-store-name>Tinta &amp; Viñeta</span>
         </a>
-        <p class="text-muted">Librería independiente de libros, manga y cómics. Elegimos cada título como si fuera para nuestra propia estantería.</p>
+        <p class="text-muted" data-store-tagline></p>
       </div>
 
       <nav aria-labelledby="footer-explorar">
@@ -222,26 +256,18 @@
 
       <div>
         <h2>Contacto</h2>
-        <ul class="footer-list" role="list">
-          <li><a href="https://wa.me/" data-whatsapp-link target="_blank" rel="noopener">WhatsApp</a></li>
-          <li><a href="mailto:contacto@example.com">contacto@example.com</a></li>
-          <li><address>Av. Ficticia 123, Santiago, Chile</address></li>
-        </ul>
+        <ul class="footer-list" role="list" data-store-contact></ul>
       </div>
 
       <div>
         <h2>Horario</h2>
-        <ul class="footer-list text-muted" role="list">
-          <li>Lun a Vie · 10:00 – 19:00</li>
-          <li>Sábado · 10:00 – 14:00</li>
-          <li>Domingo · Cerrado</li>
-        </ul>
+        <ul class="footer-list footer-hours text-muted" role="list" data-store-hours></ul>
       </div>
     </div>
 
     <div class="container footer-bottom">
-      <p>© <span data-year>2026</span> <span data-store-name>Tinta &amp; Viñeta</span>. Proyecto demostrativo, no es una tienda real.</p>
-      <p>Diseño y desarrollo: <a href="#" data-dev-link target="_blank" rel="noopener">Tu Nombre</a></p>
+      <p>© <span data-year>2026</span> <span data-store-name>Tinta &amp; Viñeta</span>. Todos los derechos reservados.</p>
+      <p data-credits></p>
     </div>
   </footer>
 </body>

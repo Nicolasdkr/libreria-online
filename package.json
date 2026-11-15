@@ -1,0 +1,26 @@
+{
+  "name": "libreria-online-storefront",
+  "version": "0.4.0",
+  "private": true,
+  "description": "Tienda online para librerías y tiendas de cómics con pedidos por WhatsApp. HTML, CSS y JavaScript sin dependencias.",
+  "type": "module",
+  "scripts": {
+    "dev": "npx --yes serve@14 . -l 3000",
+    "start": "npx --yes serve@14 . -l 3000"
+  },
+  "keywords": [
+    "ecommerce",
+    "storefront",
+    "bookstore",
+    "whatsapp",
+    "vanilla-js",
+    "static-site"
+  ],
+  "author": "Nicolasdkr (https://github.com/Nicolasdkr)",
+  "license": "SEE LICENSE IN LICENSE",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nicolasdkr/libreria-online.git"
+  },
+  "homepage": "https://nicolasdkr.github.io/libreria-online/"
+}

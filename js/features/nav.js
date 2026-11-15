@@ -1,5 +1,5 @@
 /**
- * nav.js — Header: menú móvil, sombra al hacer scroll y resaltado de la sección activa.
+ * features/nav.js — Header: menú móvil, sombra al hacer scroll y resaltado de la sección activa.
  */
 const MOBILE_QUERY = window.matchMedia('(max-width: 900px)');
 

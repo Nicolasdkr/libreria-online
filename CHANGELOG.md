@@ -1,0 +1,59 @@
+# Changelog
+
+Todos los cambios relevantes del proyecto se documentan aquí.
+
+El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y el proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
+
+## [Unreleased]
+
+### Planificado
+- Búsqueda en tiempo real y filtros combinables sincronizados con la URL (0.5).
+- Carrito persistente con sincronización entre pestañas (0.6).
+- Checkout con pedido redactado a WhatsApp (0.7).
+
+## [0.4.0] - 2026-11-15
+
+### Agregado
+- `config/store.config.js`: configuración central del negocio (marca, contacto, horario, moneda, categorías, modo demo y créditos).
+- `js/core/config.js`: mezcla la configuración con valores por defecto, la valida con avisos en consola y la congela.
+- `js/core/storage.js`: acceso seguro a `localStorage`.
+- `css/tokens.css`: identidad visual aislada en variables, editable sin tocar el resto de los estilos.
+- Barra de modo demo, configurable.
+- Sección **Novedades** con carril horizontal y scroll-snap.
+- Sección **Contacto** con WhatsApp, dirección y horario tomados de la configuración.
+- Documentación: guía de personalización, arquitectura y despliegue.
+- Workflow de GitHub Actions para publicar en GitHub Pages.
+- `LICENSE` (código visible, uso comercial con licencia), `package.json` y `.editorconfig`.
+
+### Cambiado
+- JavaScript reorganizado en `core/`, `features/` y `lib/`, con `app.js` como punto de entrada.
+- El HTML ya no contiene datos del negocio: nombre, contacto, horario y créditos se cargan desde la configuración.
+- Claves de `localStorage` renombradas a `storefront.*`.
+
+## [0.3.0] - 2026-11-15
+
+### Agregado
+- Catálogo dinámico desde `data/products.json` (24 productos de ejemplo).
+- Carga de datos con límite de espera, validación y caché en memoria.
+- Tarjetas de producto con badges, stock bajo, agotados y portada de respaldo generada con CSS.
+- Skeletons de carga, estado vacío y estado de error con reintento.
+- Tarjetas de categoría con contador y filtrado.
+
+## [0.2.0] - 2026-11-15
+
+### Agregado
+- Header fijo y responsivo con navegación, buscador, carrito y menú móvil.
+- Resaltado de la sección activa en la navegación.
+- Hero con collage de portadas y footer en cuatro columnas.
+
+## [0.1.0] - 2026-11-15
+
+### Agregado
+- Estructura base, HTML semántico y SEO básico.
+- Design tokens y modo claro/oscuro persistente sin destello al cargar.
+
+[Unreleased]: https://github.com/Nicolasdkr/libreria-online/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/Nicolasdkr/libreria-online/releases/tag/v0.4.0
+[0.3.0]: https://github.com/Nicolasdkr/libreria-online/commit/035da45
+[0.2.0]: https://github.com/Nicolasdkr/libreria-online/commit/c656eb7
+[0.1.0]: https://github.com/Nicolasdkr/libreria-online/commit/0930caa
