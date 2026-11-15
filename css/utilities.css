@@ -11,6 +11,11 @@
   padding-block: var(--space-8);
 }
 
+/* Evita el doble espacio entre secciones consecutivas */
+.section + .section {
+  padding-top: 0;
+}
+
 /* Apila hijos con espacio vertical uniforme */
 .stack > * + * {
   margin-top: var(--stack-gap, var(--space-4));
@@ -43,6 +48,22 @@
   display: grid;
   gap: var(--space-3);
   margin-bottom: var(--space-6);
+}
+
+.section-head .section-head {
+  margin-bottom: 0;
+}
+
+/* Variante: título a la izquierda y dato/acción a la derecha */
+.section-head--row {
+  grid-template-columns: 1fr auto;
+  align-items: end;
+}
+
+@media (max-width: 600px) {
+  .section-head--row {
+    grid-template-columns: 1fr;
+  }
 }
 
 .text-muted {

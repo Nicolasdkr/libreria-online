@@ -58,6 +58,41 @@
   border-color: var(--color-text);
 }
 
+.btn--sm {
+  min-height: 40px;
+  padding-inline: var(--space-4);
+  font-size: var(--fs-sm);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn--primary:disabled:hover {
+  background: var(--color-accent);
+}
+
+/* ---------- Badges ---------- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+  text-transform: uppercase;
+  box-shadow: var(--shadow-sm);
+}
+
+.badge--new  { background: var(--color-secondary); color: var(--color-bg); }
+.badge--sale { background: var(--color-accent); color: var(--color-on-accent); }
+.badge--hot  { background: #ffd23f; color: #1c1917; }
+.badge--out  { background: var(--color-text); color: var(--color-bg); }
+
 /* ---------- Botón de icono ---------- */
 .icon-btn {
   display: inline-grid;
@@ -123,6 +158,10 @@
     inset 7px 0 0 rgb(0 0 0 / 0.2),           /* lomo */
     inset 9px 0 0 rgb(255 255 255 / 0.12),
     var(--shadow-lg);
+}
+
+.cover[hidden] {
+  display: none;
 }
 
 /* Trama halftone sutil sobre la portada */

@@ -27,4 +27,12 @@ export const CONFIG = Object.freeze({
 
   // Ruta del catálogo
   productsUrl: 'data/products.json',
+
+  // Categorías de la tienda (el id coincide con "category" en products.json)
+  categories: [
+    { id: 'libros', label: 'Libros', description: 'Narrativa, clásicos y poesía', hue: 205 },
+    { id: 'manga', label: 'Manga', description: 'Shōnen, seinen y lo último de Japón', hue: 350 },
+    { id: 'comics', label: 'Cómics', description: 'Superhéroes, humor e historieta', hue: 42 },
+    { id: 'novela-grafica', label: 'Novela gráfica', description: 'Historias de autor en viñetas', hue: 160 },
+  ],
 });

@@ -34,6 +34,7 @@
   <link rel="stylesheet" href="css/base.css" />
   <link rel="stylesheet" href="css/layout.css" />
   <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/catalog.css" />
   <link rel="stylesheet" href="css/utilities.css" />
 
   <script type="module" src="js/main.js"></script>
@@ -149,17 +150,35 @@
       </div>
     </section>
 
-    <!-- Paso 3: categorías -->
+    <!-- ========================== CATEGORÍAS ========================== -->
     <section class="section" id="categorias" aria-labelledby="categorias-title">
-      <div class="container section-head">
-        <h2 id="categorias-title">Categorías</h2>
+      <div class="container">
+        <div class="section-head">
+          <p class="eyebrow">Explora por género</p>
+          <h2 id="categorias-title">¿Qué te gustaría leer hoy?</h2>
+        </div>
+        <div class="category-grid" data-category-grid></div>
       </div>
     </section>
 
-    <!-- Paso 3-4: catálogo y filtros -->
+    <!-- =========================== CATÁLOGO =========================== -->
     <section class="section" id="catalogo" aria-labelledby="catalogo-title">
-      <div class="container section-head">
-        <h2 id="catalogo-title">Catálogo</h2>
+      <div class="container">
+        <div class="section-head section-head--row">
+          <div class="section-head">
+            <p class="eyebrow">Catálogo</p>
+            <h2 id="catalogo-title">Encuentra tu próxima lectura</h2>
+          </div>
+          <p class="catalog-count" data-results-count aria-live="polite"></p>
+        </div>
+
+        <!-- Paso 4: aquí va la barra de filtros (búsqueda, orden, precio) -->
+        <div class="active-filter" data-active-filter hidden>
+          <span>Mostrando: <strong data-active-filter-label></strong></span>
+          <button class="btn btn--ghost btn--sm" type="button" data-clear-filter>Ver todo</button>
+        </div>
+
+        <div class="product-grid" data-product-grid aria-busy="true"></div>
       </div>
     </section>
 

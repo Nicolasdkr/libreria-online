@@ -1,0 +1,331 @@
+/* ==========================================================================
+   catalog.css — categorías, grilla de productos, tarjetas, skeletons y estados
+   ========================================================================== */
+
+/* ============================ CATEGORÍAS ============================ */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+}
+
+.category-card {
+  --h: 20;
+  --card-bg: hsl(var(--h) 60% 92%);
+  --card-fg: hsl(var(--h) 50% 18%);
+  position: relative;
+  display: grid;
+  align-content: end;
+  gap: var(--space-1);
+  min-height: 210px;
+  padding: var(--space-5);
+  overflow: hidden;
+  border: 2px solid transparent;
+  border-radius: var(--radius-lg);
+  background: var(--card-bg);
+  color: var(--card-fg);
+  text-align: left;
+  transition:
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .category-card {
+    --card-bg: hsl(var(--h) 28% 17%);
+    --card-fg: hsl(var(--h) 55% 90%);
+  }
+}
+
+:root[data-theme="dark"] .category-card {
+  --card-bg: hsl(var(--h) 28% 17%);
+  --card-fg: hsl(var(--h) 55% 90%);
+}
+
+.category-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow);
+}
+
+.category-card[aria-pressed="true"] {
+  border-color: currentColor;
+}
+
+.category-card__name {
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.category-card__desc {
+  font-size: var(--fs-sm);
+  opacity: 0.82;
+}
+
+.category-card__count {
+  margin-top: var(--space-2);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Mini lomos de libros decorativos */
+.category-card__books {
+  position: absolute;
+  top: var(--space-5);
+  right: var(--space-5);
+  display: flex;
+}
+
+.category-card__books span {
+  width: 34px;
+  aspect-ratio: 2 / 3;
+  margin-left: -10px;
+  border-radius: 2px 5px 5px 2px;
+  background: hsl(calc(var(--h) + var(--o, 0)) 62% 50%);
+  box-shadow: inset 3px 0 0 rgb(0 0 0 / 0.2), var(--shadow-sm);
+  rotate: var(--r, 0deg);
+  transition: rotate 300ms var(--ease), translate 300ms var(--ease);
+}
+
+.category-card__books span:nth-child(1) { --o: -25; --r: -10deg; }
+.category-card__books span:nth-child(2) { --o: 0;   --r: 0deg; translate: 0 -6px; }
+.category-card__books span:nth-child(3) { --o: 25;  --r: 10deg; }
+
+.category-card:hover .category-card__books span:nth-child(1) { rotate: -18deg; }
+.category-card:hover .category-card__books span:nth-child(2) { translate: 0 -12px; }
+.category-card:hover .category-card__books span:nth-child(3) { rotate: 18deg; }
+
+@media (max-width: 900px) {
+  .category-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 480px) {
+  .category-grid { grid-template-columns: 1fr; }
+  .category-card { min-height: 150px; }
+}
+
+/* ============================= CATÁLOGO ============================= */
+.catalog-count {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.active-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  width: fit-content;
+  margin-bottom: var(--space-5);
+  padding: var(--space-1) var(--space-1) var(--space-1) var(--space-4);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-2);
+  font-size: var(--fs-sm);
+}
+
+.active-filter[hidden] {
+  display: none;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+  gap: var(--space-5) var(--space-3);
+}
+
+@media (min-width: 768px) {
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: var(--space-6) var(--space-5);
+  }
+}
+
+/* ---------- Tarjeta de producto ---------- */
+.product-card {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  transition:
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.product-card__media {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 12% 18% 8%;
+  background: var(--color-surface-2);
+}
+
+.product-card__media > img,
+.product-card__media > .cover {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 4px 10px 10px 4px;
+  box-shadow:
+    inset 7px 0 0 rgb(0 0 0 / 0.2),
+    inset 9px 0 0 rgb(255 255 255 / 0.12),
+    var(--shadow);
+  transition: transform 300ms var(--ease);
+}
+
+.product-card:hover .product-card__media > img,
+.product-card:hover .product-card__media > .cover {
+  transform: translateY(-4px) rotate(-1.5deg);
+}
+
+/* Tipografía de la portada relativa al ancho de la tarjeta (container query units) */
+.product-card .cover__title  { font-size: clamp(0.8rem, 8.5cqi, 1.35rem); }
+.product-card .cover__tag    { font-size: clamp(0.5rem, 3.6cqi, 0.68rem); }
+.product-card .cover__author { font-size: clamp(0.55rem, 4cqi, 0.75rem); }
+
+.product-card.is-out .product-card__media > :is(img, .cover) {
+  filter: grayscale(0.85);
+  opacity: 0.7;
+}
+
+.product-card__badges {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-3);
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.product-card__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4);
+}
+
+.product-card__category {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.product-card__title {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 1.05rem;
+  line-height: 1.25;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.product-card__author {
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+}
+
+.product-card__stock {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.product-card__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-top: auto;
+  padding-top: var(--space-3);
+}
+
+.price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--space-2);
+}
+
+.price__now {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.price__old {
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+}
+
+/* Tarjetas angostas (móvil): botón a lo ancho, debajo del precio */
+@container (max-width: 200px) {
+  .product-card__body { padding: var(--space-3); }
+  .product-card__footer { flex-direction: column; align-items: stretch; }
+  .product-card__footer .btn { width: 100%; }
+}
+
+/* ---------- Skeletons de carga ---------- */
+.product-card.is-skeleton:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.skeleton {
+  border-radius: var(--radius-sm);
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-2) 25%,
+    color-mix(in srgb, var(--color-surface-2) 50%, var(--color-surface)) 37%,
+    var(--color-surface-2) 63%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+.product-card__media .skeleton--cover {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  background-color: var(--color-border);
+}
+
+.skeleton--line { height: 0.85rem; }
+.skeleton--btn  { width: 92px; height: 40px; border-radius: var(--radius-pill); }
+
+@keyframes shimmer {
+  from { background-position: 100% 50%; }
+  to   { background-position: 0 50%; }
+}
+
+/* ---------- Estados vacío / error ---------- */
+.catalog-state {
+  grid-column: 1 / -1;
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  padding: var(--space-7) var(--space-4);
+  border: 1.5px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+
+.catalog-state .icon {
+  width: 40px;
+  height: 40px;
+  color: var(--color-text-muted);
+}
