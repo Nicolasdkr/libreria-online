@@ -1,0 +1,218 @@
+/* ==========================================================================
+   base.css — reset, design tokens (claro/oscuro) y tipografía
+   ========================================================================== */
+
+/* ---------- Tokens: tema claro (por defecto) ---------- */
+:root {
+  color-scheme: light;
+
+  /* Color */
+  --color-bg:          #faf7f2;  /* papel */
+  --color-surface:     #ffffff;
+  --color-surface-2:   #f1ece3;
+  --color-text:        #1c1917;  /* tinta */
+  --color-text-muted:  #5f5850;
+  --color-border:      #e2dacd;
+  --color-accent:      #c8402a;  /* rojo viñeta */
+  --color-accent-hover:#a83421;
+  --color-on-accent:   #ffffff;
+  --color-secondary:   #1f4e79;  /* azul tinta */
+  --color-success:     #2f7d4f;
+  --color-focus:       #1f6feb;
+
+  /* Tipografía */
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --fs-sm:   0.875rem;
+  --fs-base: 1rem;
+  --fs-md:   clamp(1.05rem, 1rem + 0.3vw, 1.2rem);
+  --fs-lg:   clamp(1.25rem, 1.1rem + 0.8vw, 1.6rem);
+  --fs-xl:   clamp(1.6rem, 1.3rem + 1.5vw, 2.4rem);
+  --fs-2xl:  clamp(2.2rem, 1.6rem + 3vw, 4rem);
+
+  /* Espaciado */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: clamp(3rem, 2rem + 4vw, 6rem);
+
+  /* Forma y profundidad */
+  --radius-sm: 6px;
+  --radius:    12px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+  --shadow-sm: 0 1px 2px rgb(28 25 23 / 0.06), 0 1px 3px rgb(28 25 23 / 0.08);
+  --shadow:    0 4px 12px rgb(28 25 23 / 0.08), 0 2px 4px rgb(28 25 23 / 0.06);
+  --shadow-lg: 0 18px 40px rgb(28 25 23 / 0.14);
+
+  /* Layout y movimiento */
+  --container: 1200px;
+  --gutter: clamp(1rem, 0.5rem + 2vw, 2rem);
+  --header-h: 68px;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --dur: 200ms;
+}
+
+/* ---------- Tokens: tema oscuro ---------- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --color-bg:          #14120f;
+    --color-surface:     #1e1b17;
+    --color-surface-2:   #28241f;
+    --color-text:        #f2ede4;
+    --color-text-muted:  #b0a798;
+    --color-border:      #38322b;
+    --color-accent:      #ff6b4a;
+    --color-accent-hover:#ff8669;
+    --color-on-accent:   #1a0d08;
+    --color-secondary:   #7fb3e6;
+    --color-success:     #5cc48a;
+    --color-focus:       #79b8ff;
+    --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+    --shadow:    0 4px 14px rgb(0 0 0 / 0.45);
+    --shadow-lg: 0 18px 40px rgb(0 0 0 / 0.55);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg:          #14120f;
+  --color-surface:     #1e1b17;
+  --color-surface-2:   #28241f;
+  --color-text:        #f2ede4;
+  --color-text-muted:  #b0a798;
+  --color-border:      #38322b;
+  --color-accent:      #ff6b4a;
+  --color-accent-hover:#ff8669;
+  --color-on-accent:   #1a0d08;
+  --color-secondary:   #7fb3e6;
+  --color-success:     #5cc48a;
+  --color-focus:       #79b8ff;
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow:    0 4px 14px rgb(0 0 0 / 0.45);
+  --shadow-lg: 0 18px 40px rgb(0 0 0 / 0.55);
+}
+
+/* ---------- Reset moderno ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-h) + var(--space-4));
+}
+
+body {
+  min-height: 100dvh;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+img,
+picture,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+ul[role="list"],
+ol[role="list"] {
+  list-style: none;
+  padding: 0;
+}
+
+/* ---------- Tipografía ---------- */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+h1 { font-size: var(--fs-2xl); }
+h2 { font-size: var(--fs-xl); }
+h3 { font-size: var(--fs-lg); }
+
+h1 em,
+h2 em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--color-accent);
+}
+
+p {
+  text-wrap: pretty;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+/* ---------- Foco visible y accesible ---------- */
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* ---------- Movimiento reducido ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
