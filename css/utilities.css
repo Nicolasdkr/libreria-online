@@ -38,6 +38,13 @@
   max-width: 60ch;
 }
 
+/* Encabezado de sección: título + bajada */
+.section-head {
+  display: grid;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
 .text-muted {
   color: var(--color-text-muted);
 }

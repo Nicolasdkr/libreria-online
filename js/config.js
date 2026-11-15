@@ -13,6 +13,12 @@ export const CONFIG = Object.freeze({
   locale: 'es-CL',
   currency: 'CLP',
 
+  // Crédito del desarrollador en el footer
+  developer: {
+    name: 'Tu Nombre',
+    url: 'https://github.com/tu-usuario',
+  },
+
   // Claves de localStorage (con prefijo para no chocar con otras apps en el mismo dominio)
   storageKeys: {
     theme: 'tv-theme',
