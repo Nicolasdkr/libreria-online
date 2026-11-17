@@ -21,7 +21,7 @@ jobs:
     name: Validar datos
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Validar products.json
         run: node -e "const p=JSON.parse(require('fs').readFileSync('data/products.json','utf8')); if(!Array.isArray(p)||!p.length) throw new Error('Catálogo vacío o inválido'); const ids=new Set(p.map(x=>x.id)); if(ids.size!==p.length) throw new Error('IDs de producto duplicados'); console.log(p.length+' productos OK')"
       - name: Revisar sintaxis de los módulos JS
@@ -35,14 +35,14 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Preparar sitio (solo archivos públicos)
         run: |
           mkdir _site
           cp -r index.html assets config css data js _site/
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: _site
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
