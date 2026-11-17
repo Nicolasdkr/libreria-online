@@ -31,6 +31,7 @@ Todo valor que no definas toma un valor por defecto, y si algo está mal escrito
 | `commerce.lowStockThreshold` | número | Desde cuántas unidades se muestra el aviso "¡Quedan N!". |
 | `catalog.productsUrl` | texto | Ruta o URL del catálogo en JSON. |
 | `catalog.newArrivalsLimit` | número | Cantidad de productos en la sección Novedades. |
+| `catalog.priceFilterStep` | número | Salto del filtro de precio máximo: `1000` para CLP o ARS, `1` para USD o EUR. |
 | `catalog.categories` | lista | Categorías de la tienda (ver más abajo). |
 | `demo.enabled` | sí/no | Muestra la barra superior de demo. **Desactívala al publicar una tienda real.** |
 | `credits.enabled` | sí/no | Muestra el crédito del desarrollador en el footer. |

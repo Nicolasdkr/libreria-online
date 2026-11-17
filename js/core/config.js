@@ -12,7 +12,12 @@ const DEFAULTS = {
   contact: { whatsapp: '', email: '', address: '' },
   hours: [],
   commerce: { locale: 'es-CL', currency: 'CLP', lowStockThreshold: 3 },
-  catalog: { productsUrl: 'data/products.json', newArrivalsLimit: 8, categories: [] },
+  catalog: {
+    productsUrl: 'data/products.json',
+    newArrivalsLimit: 8,
+    priceFilterStep: 1000,
+    categories: [],
+  },
   demo: { enabled: false, message: '', ctaLabel: '', ctaUrl: '' },
   credits: { enabled: false, label: '', name: '', url: '' },
 };

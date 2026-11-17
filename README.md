@@ -8,7 +8,7 @@ Sin backend, sin comisiones por venta, sin dependencias. Se configura en tres ar
 
 [**Ver demo en vivo**](https://nicolasdkr.github.io/libreria-online/) · [Guía de personalización](docs/CUSTOMIZATION.md) · [Arquitectura](docs/ARCHITECTURE.md) · [Despliegue](docs/DEPLOYMENT.md)
 
-![Versión](https://img.shields.io/badge/versión-0.4.0-c8402a)
+![Versión](https://img.shields.io/badge/versión-0.5.0-c8402a)
 ![Licencia](https://img.shields.io/badge/licencia-uso%20comercial%20con%20permiso-1f4e79)
 ![Dependencias](https://img.shields.io/badge/dependencias-0-2f7d4f)
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
@@ -39,6 +39,9 @@ La demo usa la marca ficticia **Tinta & Viñeta**: todo su contenido (nombre, pr
 
 - **Catálogo dinámico** desde un JSON: tarjetas con badges de oferta, novedad y más vendido, aviso de stock bajo y productos agotados.
 - **Categorías configurables** con contador de títulos y filtrado inmediato.
+- **Búsqueda en tiempo real** por título o autor que ignora tildes y mayúsculas y acepta palabras en cualquier orden.
+- **Filtros combinables**: categoría, orden, precio máximo y solo disponibles, con contador de resultados.
+- **Búsquedas compartibles**: los filtros viven en la URL (`?cat=manga&q=frieren`), así cualquier búsqueda se puede enviar por enlace.
 - **Sección de novedades** en un carril horizontal con scroll-snap.
 - **Modo claro y oscuro** que respeta la preferencia del sistema, recuerda la elección y no produce destello al cargar.
 - **Diseño responsivo**: el header se adapta a móvil con menú hamburguesa y las tarjetas se ajustan a su propio ancho (container queries).
@@ -47,7 +50,7 @@ La demo usa la marca ficticia **Tinta & Viñeta**: todo su contenido (nombre, pr
 - **Modo demo** activable desde la configuración, para mostrar la tienda a clientes antes de publicarla.
 - **Accesibilidad**: HTML semántico, navegación por teclado, foco visible, textos para lectores de pantalla y soporte de `prefers-reduced-motion`.
 
-**En desarrollo:** búsqueda en tiempo real, filtros combinables, carrito persistente y checkout por WhatsApp. Ver el [roadmap](#roadmap).
+**En desarrollo:** carrito persistente y checkout por WhatsApp. Ver el [roadmap](#roadmap).
 
 ## Inicio rápido
 
@@ -55,9 +58,10 @@ La demo usa la marca ficticia **Tinta & Viñeta**: todo su contenido (nombre, pr
 git clone https://github.com/Nicolasdkr/libreria-online.git
 cd libreria-online
 npm run dev        # o: npx serve .
+npm test           # tests de la lógica de filtros (Node 20 o superior)
 ```
 
-Abre `http://localhost:3000`. No hay paso de instalación ni de compilación.
+Abre `http://localhost:3000`. No hay paso de instalación ni de compilación, y los tests usan el test runner que trae Node, sin dependencias.
 
 > [!NOTE]
 > El catálogo se carga con `fetch`, así que la tienda necesita un servidor HTTP. Abrir `index.html` con doble clic no funciona.
@@ -94,8 +98,9 @@ La guía completa, con el esquema de productos y la lista de revisión previa a 
 ├── js/
 │   ├── app.js                 Punto de entrada y estado compartido
 │   ├── core/                  Configuración, datos y almacenamiento
-│   ├── features/              Catálogo, tema, navegación, datos de la tienda
-│   └── lib/                   Utilidades puras (formato, escape, debounce)
+│   ├── features/              Catálogo, filtros, tema, navegación, datos de la tienda
+│   └── lib/                   Lógica pura: filtros, formato, escape, debounce
+├── tests/                     Tests con node:test
 ├── assets/                    Favicon e imágenes
 └── docs/                      Documentación técnica y de personalización
 ```
@@ -104,6 +109,7 @@ La guía completa, con el esquema de productos y la lista de revisión previa a 
 
 - **Sin framework ni build.** HTML, CSS y JavaScript estándar con ES Modules. Carga rápido, se publica en cualquier hosting estático y cualquier desarrollador web puede mantenerlo.
 - **Capas separadas.** `core` resuelve datos y configuración, `features` dibuja la interfaz y `app.js` las coordina. Cambiar la fuente de datos (API, CMS o planilla) implica modificar un solo archivo.
+- **Lógica testeable.** Filtrar, ordenar y leer o escribir la URL son funciones puras en `js/lib/filtering.js`, cubiertas por tests que corren en cada despliegue.
 - **Configuración validada.** `store.config.js` se mezcla con valores por defecto, se valida (con avisos claros en consola) y se congela para que ningún módulo la altere.
 - **Seguro por defecto.** Todo dato del catálogo se escapa antes de insertarse en el HTML, y el acceso a `localStorage` está protegido para navegadores que lo bloquean.
 - **Tokens de diseño.** Toda la identidad visual son variables CSS: cambiar la marca no requiere buscar colores en todo el código.
@@ -120,7 +126,7 @@ Navegadores modernos (últimas dos versiones de Chrome, Edge, Firefox y Safari, 
 | --- | --- | --- |
 | 0.1 – 0.3 | Base, layout responsivo, catálogo dinámico, categorías | ✅ |
 | 0.4 | Estructura de producto: configuración central, tokens, modo demo, documentación | ✅ |
-| 0.5 | Búsqueda en tiempo real, filtros combinables y URL compartible | 🔜 |
+| 0.5 | Búsqueda en tiempo real, filtros combinables, URL compartible y tests | ✅ |
 | 0.6 | Carrito persistente con sincronización entre pestañas | 🔜 |
 | 0.7 | Checkout con pedido redactado a WhatsApp | 🔜 |
 | 0.8 | Modal de detalle de producto, toasts y pulido de accesibilidad | 🔜 |

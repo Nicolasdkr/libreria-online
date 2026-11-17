@@ -17,7 +17,9 @@ config/store.config.js          Datos del negocio (editable por el cliente)
         ▼
 js/core/config.js               Mezcla con valores por defecto → valida → congela → CONFIG
         │
-        ├──────────────► js/lib/utils.js        Funciones puras: formato de precio, escape, debounce
+        ├──────────────► js/lib/*               Lógica pura, sin DOM (cubierta por tests/)
+        │                  ├─ utils.js          Formato de precio, escape, normalización, debounce
+        │                  └─ filtering.js      Filtrar, ordenar, leer y escribir filtros en la URL
         │
         ├──────────────► js/core/api.js         fetchProducts(): obtiene y valida el catálogo
         │
@@ -25,6 +27,7 @@ js/core/config.js               Mezcla con valores por defecto → valida → co
                            ├─ store-info.js     Vuelca nombre, contacto y horario en el DOM
                            ├─ theme.js          Modo claro/oscuro
                            ├─ nav.js            Menú móvil, sombra del header, sección activa
+                           ├─ filters.js        Barra de filtros (chips, orden, precio, stock)
                            └─ catalog.js        Tarjetas, categorías, skeletons, estados
 
 js/app.js                       Punto de entrada: inicializa features y guarda el estado compartido
@@ -35,21 +38,52 @@ js/app.js                       Punto de entrada: inicializa features y guarda e
 - `core/` y `lib/` **nunca** importan desde `features/`.
 - Los módulos de `features/` **no se importan entre sí**: se comunican a través de `app.js`.
 - Solo `core/config.js` importa `config/store.config.js`. El resto usa `CONFIG`.
-- `catalog.js` es presentación pura: recibe una lista y la dibuja. Decidir *qué* productos mostrar (filtros, orden) corresponde a `app.js` y, a partir de la versión 0.5, a un módulo de filtros.
+- `catalog.js` y `filters.js` son presentación: dibujan y avisan de las interacciones con callbacks. Decidir *qué* productos mostrar es tarea de `lib/filtering.js`, y `app.js` lo coordina.
 
 ## Flujo de datos
 
 ```
-fetchProducts()  ──►  state.products  ──►  visibleProducts()  ──►  renderProducts(grid, lista)
-                          (app.js)          (categoría activa)        (features/catalog.js)
-                                                    ▲
-                     clic en categoría ─────────────┘
+ buscador · chips · orden · precio · tarjetas de categoría
+                         │
+                         ▼
+                 setFilters(patch)                         (app.js)
+                         │
+           ┌─────────────┴──────────────┐
+           ▼                            ▼
+  state.filters ──► URL         applyFilters(products, filters)   (lib/filtering.js)
+  (replaceState)                        │
+                                        ▼
+                         renderProducts(grid, lista)       (features/catalog.js)
+                         filterBar.sync(filters)           (features/filters.js)
 ```
 
-1. `app.js` muestra skeletons y llama a `fetchProducts()`.
+1. Al iniciar, `app.js` lee los filtros desde la URL con `parseFilters()`, muestra skeletons y llama a `fetchProducts()`.
 2. `api.js` descarga el JSON con un límite de espera, descarta los productos inválidos y guarda el resultado en memoria.
-3. `app.js` guarda los productos en `state`, calcula la lista visible y se la pasa a `catalog.js`.
-4. Cada interacción (por ejemplo, elegir una categoría) actualiza `state` y vuelve a llamar a la función de render.
+3. Cada interacción llama a `setFilters()` con solo lo que cambió. `app.js` actualiza `state.filters`, lo escribe en la URL y vuelve a dibujar.
+4. `applyFilters()` devuelve una lista nueva, ya filtrada y ordenada, sin modificar `state.products`.
+5. Los controles no guardan estado propio: `filterBar.sync()` los alinea con `state.filters`, así nunca muestran algo distinto a lo filtrado.
+
+### Filtros en la URL
+
+| Parámetro | Ejemplo | Significado |
+| --- | --- | --- |
+| `cat` | `cat=manga` | Categoría (debe existir en la configuración) |
+| `q` | `q=one%20piece` | Búsqueda por título o autor (máximo 100 caracteres) |
+| `orden` | `orden=precio-asc` | `destacados`, `novedad`, `precio-asc`, `precio-desc` o `titulo` |
+| `max` | `max=20000` | Precio máximo |
+| `stock` | `stock=1` | Solo productos disponibles |
+
+Los valores por defecto no se escriben en la URL, y los inválidos se ignoran. Se usa `history.replaceState` para no llenar el historial con cada tecla.
+
+## Tests
+
+La lógica pura de `js/lib/` se prueba con el test runner integrado de Node, sin dependencias:
+
+```bash
+npm test
+```
+
+Los tests están en `tests/` y se ejecutan en el workflow de despliegue antes de publicar: si alguno falla, la versión no se publica. Al agregar lógica nueva, conviene escribirla como función pura en `lib/` y testearla ahí; los módulos de `features/` deberían limitarse a conectar esa lógica con el DOM.
 
 ## Contrato de la capa de datos
 
@@ -116,9 +150,10 @@ El resto de la aplicación no cambia.
 1. Crea `js/features/mi-feature.js` y exporta una función `initMiFeature()`.
 2. Si necesita datos de la tienda, importa `CONFIG` desde `../core/config.js`. Si es configurable, agrega la clave con su valor por defecto en `DEFAULTS` y documéntala en `docs/CUSTOMIZATION.md`.
 3. Conecta el HTML con atributos `data-*`.
-4. Inicialízala en `init()` de `app.js`.
-5. Agrega los estilos en el archivo CSS que corresponda, usando solo variables de `tokens.css`.
-6. Registra el cambio en `CHANGELOG.md`.
+4. Si tiene lógica no trivial, sepárala en una función pura dentro de `js/lib/` y agrega sus tests en `tests/`.
+5. Inicialízala en `init()` de `app.js`.
+6. Agrega los estilos en el archivo CSS que corresponda, usando solo variables de `tokens.css`.
+7. Registra el cambio en `CHANGELOG.md`.
 
 ## Almacenamiento local
 

@@ -137,7 +137,12 @@ export function renderSkeletons(grid, count = 8) {
   grid.innerHTML = Array.from({ length: count }, skeletonCard).join('');
 }
 
-export function renderProducts(grid, products) {
+/**
+ * @param {HTMLElement} grid
+ * @param {Array<object>} products
+ * @param {{ emptyAction?: { label: string, onAction: () => void } }} [options]
+ */
+export function renderProducts(grid, products, { emptyAction } = {}) {
   grid.setAttribute('aria-busy', 'false');
 
   if (!products.length) {
@@ -145,6 +150,8 @@ export function renderProducts(grid, products) {
       icon: ICONS.search,
       title: 'No encontramos títulos',
       text: 'Prueba con otra búsqueda o quita algún filtro.',
+      actionLabel: emptyAction?.label,
+      onAction: emptyAction?.onAction,
     });
     return;
   }

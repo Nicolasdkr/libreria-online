@@ -45,6 +45,7 @@ export default {
   catalog: {
     productsUrl: 'data/products.json',
     newArrivalsLimit: 8, // productos en la sección "Novedades"
+    priceFilterStep: 1000, // salto del filtro de precio (ej. 1000 para CLP, 1 para USD/EUR)
 
     // El `id` debe coincidir con el campo `category` de cada producto.
     // `hue` (0–360) define el color de la tarjeta y de las portadas generadas.

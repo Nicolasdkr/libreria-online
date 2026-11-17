@@ -8,7 +8,7 @@
        por eso se editan aquí y no en store.config.js (ver docs/CUSTOMIZATION.md) -->
   <title>Tinta &amp; Viñeta · Librería y Cómics Online</title>
   <meta name="description" content="Librería online de libros, manga, cómics y novela gráfica. Explora el catálogo, arma tu carrito y haz tu pedido por WhatsApp." />
-  <meta name="generator" content="Librería Online Storefront 0.4.0" />
+  <meta name="generator" content="Librería Online Storefront 0.5.0" />
   <meta name="theme-color" content="#faf7f2" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#14120f" media="(prefers-color-scheme: dark)" />
 
@@ -184,9 +184,32 @@
           <p class="catalog-count" data-results-count aria-live="polite"></p>
         </div>
 
-        <div class="active-filter" data-active-filter hidden>
-          <span>Mostrando: <strong data-active-filter-label></strong></span>
-          <button class="btn btn--ghost btn--sm" type="button" data-clear-filter>Ver todo</button>
+        <div class="filter-bar" data-filter-bar>
+          <div class="filter-chips" role="group" aria-label="Filtrar por categoría" data-filter-categories></div>
+
+          <div class="filter-controls">
+            <div class="field field--sort">
+              <label class="field__label" for="filter-sort">Ordenar por</label>
+              <select class="select" id="filter-sort" data-filter-sort></select>
+            </div>
+
+            <div class="field field--range">
+              <div class="field__row">
+                <label class="field__label" for="filter-price">Precio máximo</label>
+                <output class="field__value" for="filter-price" data-filter-price-output>Sin límite</output>
+              </div>
+              <input class="range" id="filter-price" type="range" data-filter-price />
+            </div>
+
+            <label class="check">
+              <input type="checkbox" data-filter-stock />
+              Solo disponibles
+            </label>
+
+            <button class="btn btn--ghost btn--sm filter-reset" type="button" data-filter-reset hidden>
+              Limpiar filtros
+            </button>
+          </div>
         </div>
 
         <div class="product-grid" data-product-grid aria-busy="true"></div>

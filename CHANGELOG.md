@@ -7,9 +7,25 @@ El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y e
 ## [Unreleased]
 
 ### Planificado
-- Búsqueda en tiempo real y filtros combinables sincronizados con la URL (0.5).
 - Carrito persistente con sincronización entre pestañas (0.6).
 - Checkout con pedido redactado a WhatsApp (0.7).
+
+## [0.5.0] - 2026-11-17
+
+### Agregado
+- Búsqueda en tiempo real desde el header: ignora tildes y mayúsculas, busca en título y autor y acepta palabras en cualquier orden.
+- Barra de filtros combinables: chips de categoría, orden (destacados, recientes, precio, título), precio máximo y "Solo disponibles".
+- Los filtros se reflejan en la URL (`?cat=manga&q=frieren&orden=precio-asc&max=20000&stock=1`). Un enlace compartido abre el catálogo con esos filtros, y los valores inválidos se ignoran.
+- Contador de resultados ("3 de 24 títulos para «vol»") y botón "Limpiar filtros", también disponible en el estado sin resultados.
+- `js/lib/filtering.js`: lógica de filtros pura, sin DOM.
+- Tests con el test runner de Node (`npm test`), ejecutados también en el workflow de despliegue.
+- Opción `catalog.priceFilterStep` en la configuración.
+
+### Cambiado
+- El orden por defecto muestra los productos agotados al final.
+- La sección Novedades ya no incluye productos agotados.
+- La barra de filtros reemplaza el indicador "Mostrando: categoría".
+- El workflow de despliegue separa empaquetado y publicación en jobs distintos y usa actions con Node 24.
 
 ## [0.4.0] - 2026-11-15
 
@@ -52,7 +68,8 @@ El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y e
 - Estructura base, HTML semántico y SEO básico.
 - Design tokens y modo claro/oscuro persistente sin destello al cargar.
 
-[Unreleased]: https://github.com/Nicolasdkr/libreria-online/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/Nicolasdkr/libreria-online/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/Nicolasdkr/libreria-online/releases/tag/v0.5.0
 [0.4.0]: https://github.com/Nicolasdkr/libreria-online/releases/tag/v0.4.0
 [0.3.0]: https://github.com/Nicolasdkr/libreria-online/commit/035da45
 [0.2.0]: https://github.com/Nicolasdkr/libreria-online/commit/c656eb7
