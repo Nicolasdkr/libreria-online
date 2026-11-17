@@ -27,13 +27,10 @@ jobs:
       - name: Revisar sintaxis de los módulos JS
         run: for f in $(find js config -name '*.js'); do node --check "$f"; done
 
-  deploy:
-    name: Publicar
+  build:
+    name: Empaquetar sitio
     needs: validate
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v7
       - name: Preparar sitio (solo archivos públicos)
@@ -44,5 +41,16 @@ jobs:
       - uses: actions/upload-pages-artifact@v5
         with:
           path: _site
+
+  # El despliegue va en un job aparte: si corre en el mismo job que la subida,
+  # deploy-pages puede no encontrar el artefacto (actions/deploy-pages#451).
+  deploy:
+    name: Publicar
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - id: deployment
         uses: actions/deploy-pages@v5
