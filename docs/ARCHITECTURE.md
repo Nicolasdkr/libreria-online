@@ -21,11 +21,12 @@ js/core/config.js               Mezcla con valores por defecto → valida → co
         │                  ├─ utils.js          Formato de precio, escape, normalización, debounce
         │                  ├─ filtering.js      Filtrar, ordenar, leer y escribir filtros en la URL
         │                  ├─ cart.js           Modelo inmutable del carrito, totales, ajuste al stock
+        │                  ├─ checkout.js       Validación, costo de entrega, número de pedido
         │                  └─ order.js          Redacción del pedido para WhatsApp
         │
         ├──────────────► js/core/*              Datos y estado
         │                  ├─ api.js            fetchProducts(): obtiene y valida el catálogo
-        │                  ├─ storage.js        localStorage seguro
+        │                  ├─ storage.js        localStorage y sessionStorage seguros
         │                  └─ cart-store.js     Estado del carrito: persistencia, pestañas, suscripción
         │
         ├──────────────► js/ui/*                Piezas visuales compartidas entre features
@@ -39,7 +40,11 @@ js/core/config.js               Mezcla con valores por defecto → valida → co
                            ├─ nav.js            Menú móvil, sombra del header, sección activa
                            ├─ filters.js        Barra de filtros (chips, orden, precio, stock)
                            ├─ catalog.js        Tarjetas, categorías, skeletons, estados
-                           └─ cart.js           Panel del carrito, contador, botones "Agregar"
+                           └─ cart/             Feature compuesta (carpeta)
+                              ├─ index.js       Punto de entrada: contador y botones "Agregar"
+                              ├─ drawer.js      Panel <dialog> y navegación entre vistas
+                              ├─ cart-view.js   Vista 1: líneas, cantidades, totales
+                              └─ checkout-view.js  Vistas 2–4: datos, revisión, pedido listo
 
 js/app.js                       Punto de entrada: inicializa features y guarda el estado compartido
 ```
@@ -48,6 +53,7 @@ js/app.js                       Punto de entrada: inicializa features y guarda e
 
 - `core/`, `lib/` y `ui/` **nunca** importan desde `features/`.
 - Los módulos de `features/` **no se importan entre sí**: se comunican a través de `app.js`. Lo que dos features necesitan dibujar igual (iconos, portadas, avisos) vive en `ui/`.
+- Una feature grande puede ser una **carpeta** (como `features/cart/`). Sus archivos sí se importan entre ellos, pero desde fuera solo se usa su `index.js`.
 - Solo `core/config.js` importa `config/store.config.js`. El resto usa `CONFIG`.
 - `catalog.js` y `filters.js` son presentación: dibujan y avisan de las interacciones con callbacks. Decidir *qué* productos mostrar es tarea de `lib/filtering.js`, y `app.js` lo coordina.
 
@@ -96,7 +102,7 @@ Los valores por defecto no se escriben en la URL, y los inválidos se ignoran. S
                        │
           ┌────────────┼──────────────────────────┐
           ▼            ▼                          ▼
-   lib/cart.js    localStorage            suscriptores: features/cart.js
+   lib/cart.js    localStorage            suscriptores: features/cart/
   (nuevo estado)  (storefront.cart)       (contador, panel, botones "Agregar")
                        │
                        ▼
@@ -112,15 +118,52 @@ Decisiones de diseño:
 - **Panel con `<dialog>` nativo.** `showModal()` atrapa el foco, cierra con Esc y deja el resto de la página inerte sin código adicional. Por eso los avisos se insertan dentro del panel cuando está abierto: fuera de él no se podrían pulsar.
 - **Foco estable al volver a dibujar.** Antes de redibujar las líneas, el panel recuerda qué control tenía el foco y lo restaura. Si la línea desapareció, mueve el foco a la siguiente.
 
-## Tests
+## Checkout
 
-La lógica pura de `js/lib/` se prueba con el test runner integrado de Node, sin dependencias:
+El checkout vive dentro del mismo panel del carrito, como una secuencia de vistas:
 
-```bash
-npm test
+```
+ cart ──"Continuar"──► details ──"Revisar pedido"──► review ──"Enviar por WhatsApp"──► sent
+  ▲                     │  ▲                          │                                │
+  └──────"Volver"───────┘  └──────"Volver"/"Editar"───┘     "Ya lo envié" ─► vacía el carrito
 ```
 
-Los tests están en `tests/` y se ejecutan en el workflow de despliegue antes de publicar: si alguno falla, la versión no se publica. Al agregar lógica nueva, conviene escribirla como función pura en `lib/` y testearla ahí; los módulos de `features/` deberían limitarse a conectar esa lógica con el DOM.
+- **Un solo `<dialog>`.** Abrir un segundo modal sobre el carrito complicaría el foco y el cierre con Esc. Al cambiar de vista, el foco pasa al título del panel ("Paso 2 de 3 · Datos de entrega") para que los lectores de pantalla anuncien el nuevo paso.
+- **Validación pura.** `normalizeCheckout()` limpia los datos y `validateCheckout()` devuelve un mensaje por campo. La vista solo los muestra: cada error se enlaza a su campo con `aria-describedby`, y el campo se marca con `aria-invalid`. Al enviar con errores, el foco va al resumen de errores.
+- **Validación progresiva.** Antes del primer intento no se muestran errores; después, se actualizan mientras el cliente corrige.
+- **Reglas que dependen de otras.** Los medios de pago se filtran según la entrega (`pickupOnly`), y el costo de despacho según el subtotal (`deliveryCost()`), así el total se actualiza en vivo.
+- **El carrito sigue mandando.** Si el carrito cambia durante el checkout (otra pestaña, ajuste de stock), la revisión se recalcula; si queda vacío, el panel vuelve a la vista del carrito.
+- **Sin backend.** El "envío" es abrir WhatsApp con el mensaje redactado. Como la tienda no puede saber si el cliente lo envió, la vista final ofrece "Ya lo envié: vaciar carrito" en lugar de vaciarlo por su cuenta.
+
+### Privacidad
+
+| Dato | Dónde | Cuándo se borra |
+| --- | --- | --- |
+| Borrador del formulario | `sessionStorage` | Al cerrar la pestaña o al terminar el pedido |
+| Nombre, entrega, dirección y pago | `localStorage` | Solo se guardan si el cliente marca "Recordar mis datos"; se borran al desmarcarlo |
+| Nota para la tienda | Solo en el borrador | Nunca se recuerda entre pedidos |
+
+Ningún dato sale del navegador, salvo el mensaje que el cliente envía por WhatsApp.
+
+## Tests
+
+Hay dos niveles de tests, ambos con el test runner integrado de Node:
+
+| Nivel | Carpeta | Qué cubre | Dependencias |
+| --- | --- | --- | --- |
+| Unitarios | `tests/*.test.js` | Funciones puras de `js/lib/`: filtros, carrito, checkout, mensaje del pedido | Ninguna |
+| Integración | `tests/dom/*.test.js` | La tienda real (`index.html` + `js/app.js`) sobre un DOM simulado: catálogo, filtros, carrito, checkout completo, sincronización entre pestañas | `jsdom` (solo desarrollo) |
+
+```bash
+npm install        # instala jsdom
+npm test           # todos
+npm run test:unit
+npm run test:dom
+```
+
+Los tests de integración simulan lo que jsdom no implementa (`showModal`, `matchMedia`, `fetch` del catálogo) y fallan si la página lanza cualquier error de JavaScript. jsdom no dibuja CSS, así que verifican comportamiento, no apariencia.
+
+Todos se ejecutan en el workflow de despliegue antes de publicar: si alguno falla, la versión no se publica. Al agregar lógica nueva, conviene escribirla como función pura en `lib/` y testearla ahí; los módulos de `features/` deberían limitarse a conectar esa lógica con el DOM.
 
 ## Contrato de la capa de datos
 
@@ -198,5 +241,7 @@ El resto de la aplicación no cambia.
 | --- | --- | --- |
 | `storefront.theme` | `"light"` o `"dark"` | `features/theme.js` y el script inline de `index.html` |
 | `storefront.cart` | `{ version, items: [{ id, qty }] }` | `core/cart-store.js` |
+| `storefront.customer` | Datos de entrega recordados (opcional) | `features/cart/checkout-view.js` |
+| `storefront.checkout-draft` | Borrador del formulario (`sessionStorage`) | `features/cart/checkout-view.js` |
 
 Todo acceso pasa por `core/storage.js`, que absorbe los errores del navegador.

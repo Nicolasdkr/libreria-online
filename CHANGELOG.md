@@ -7,7 +7,30 @@ El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y e
 ## [Unreleased]
 
 ### Planificado
-- Checkout con datos del cliente, retiro o despacho, y resumen del pedido (0.7).
+- Vista de detalle de producto y pulido final de accesibilidad (0.8).
+
+## [0.7.0] - 2026-11-18
+
+### Agregado
+- **Checkout en tres pasos** dentro del panel del carrito: carrito → datos de entrega → revisión, más una confirmación final.
+- **Formas de entrega configurables:** retiro en tienda o despacho con costo fijo, gratis desde `commerce.freeShippingThreshold`. Si solo hay una activa, queda preseleccionada.
+- **Medios de pago configurables**, con opciones solo para retiro (`pickupOnly`) que se ocultan al elegir despacho.
+- Total en vivo durante el formulario, y revisión con desglose (subtotal, entrega, ahorro, total) y enlaces "Editar" a cada paso.
+- **Número de pedido** legible (`TV-261118-4K7Q`) incluido en el mensaje de WhatsApp.
+- Mensaje de WhatsApp completo: número de pedido, productos, desglose, nombre, entrega, dirección, referencia, pago y nota.
+- **Validación accesible:** mensajes por campo con `aria-describedby` y `aria-invalid`, resumen de errores con foco y enlaces a cada campo, y errores que se actualizan mientras el cliente corrige.
+- Borrador del formulario en `sessionStorage` y opción **"Recordar mis datos"** en `localStorage`; la nota nunca se recuerda.
+- Vista final con "Abrir WhatsApp de nuevo" y "Ya lo envié: vaciar carrito".
+- `js/lib/checkout.js` con 19 tests unitarios nuevos, más 3 tests del mensaje con datos de entrega.
+- **Tests de integración** con jsdom (`tests/dom/`): 19 tests recorren la tienda real de punta a punta y fallan si hay errores de JavaScript.
+- `npm run test:unit` y `npm run test:dom`. El workflow instala Node 24 con `actions/setup-node@v7` y ejecuta los 84 tests antes de publicar.
+
+### Cambiado
+- La interfaz del carrito pasó a la carpeta `js/features/cart/` (panel, vista del carrito y vista del checkout).
+- El botón principal del carrito ahora es "Continuar con el pedido". El pedido rápido sin datos sigue disponible en `buildOrderMessage()`, sin la opción `order`.
+- `core/storage.js` también expone `sessionStore`.
+- La barra de progreso del carrito habla de "despacho gratis" y solo aparece si el despacho está activo.
+- `jsdom` se agrega como dependencia de desarrollo; la tienda publicada sigue sin dependencias.
 
 ## [0.6.0] - 2026-11-18
 
@@ -88,7 +111,8 @@ El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y e
 - Estructura base, HTML semántico y SEO básico.
 - Design tokens y modo claro/oscuro persistente sin destello al cargar.
 
-[Unreleased]: https://github.com/Nicolasdkr/libreria-online/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/Nicolasdkr/libreria-online/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/Nicolasdkr/libreria-online/releases/tag/v0.7.0
 [0.6.0]: https://github.com/Nicolasdkr/libreria-online/releases/tag/v0.6.0
 [0.5.0]: https://github.com/Nicolasdkr/libreria-online/releases/tag/v0.5.0
 [0.4.0]: https://github.com/Nicolasdkr/libreria-online/releases/tag/v0.4.0

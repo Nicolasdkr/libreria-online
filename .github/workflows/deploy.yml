@@ -22,6 +22,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - name: Instalar dependencias de desarrollo (jsdom para los tests de integración)
+        run: npm ci
       - name: Validar products.json
         run: node -e "const p=JSON.parse(require('fs').readFileSync('data/products.json','utf8')); if(!Array.isArray(p)||!p.length) throw new Error('Catálogo vacío o inválido'); const ids=new Set(p.map(x=>x.id)); if(ids.size!==p.length) throw new Error('IDs de producto duplicados'); console.log(p.length+' productos OK')"
       - name: Revisar sintaxis de los módulos JS

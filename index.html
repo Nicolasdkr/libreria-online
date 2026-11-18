@@ -8,7 +8,7 @@
        por eso se editan aquí y no en store.config.js (ver docs/CUSTOMIZATION.md) -->
   <title>Tinta &amp; Viñeta · Librería y Cómics Online</title>
   <meta name="description" content="Librería online de libros, manga, cómics y novela gráfica. Explora el catálogo, arma tu carrito y haz tu pedido por WhatsApp." />
-  <meta name="generator" content="Librería Online Storefront 0.6.0" />
+  <meta name="generator" content="Librería Online Storefront 0.7.0" />
   <meta name="theme-color" content="#faf7f2" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#14120f" media="(prefers-color-scheme: dark)" />
 
@@ -299,24 +299,136 @@
        <dialog> modal: atrapa el foco, cierra con Esc y deja la página inerte de forma nativa -->
   <dialog class="drawer" id="cart-drawer" data-cart-drawer aria-labelledby="cart-title">
     <header class="drawer__header">
-      <h2 class="drawer__title" id="cart-title">Tu carrito <span class="drawer__count" data-cart-drawer-count></span></h2>
+      <button class="icon-btn" type="button" data-drawer-back hidden aria-label="Volver al paso anterior">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+      </button>
+      <div class="drawer__heading">
+        <p class="drawer__step" data-drawer-step hidden></p>
+        <h2 class="drawer__title" id="cart-title" data-drawer-title tabindex="-1">
+          <span data-drawer-title-text>Tu carrito</span> <span class="drawer__count" data-drawer-count></span>
+        </h2>
+      </div>
       <button class="icon-btn" type="button" data-cart-close aria-label="Cerrar carrito">
         <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
       </button>
     </header>
 
-    <div class="drawer__shipping" data-cart-shipping></div>
-    <div class="drawer__body" data-cart-items></div>
+    <!-- Vista 1 · Carrito -->
+    <section class="drawer__view" data-view="cart">
+      <div class="drawer__shipping" data-cart-shipping></div>
+      <div class="drawer__body" data-cart-items></div>
+      <footer class="drawer__footer" data-cart-footer hidden>
+        <dl class="cart-totals" data-cart-totals></dl>
+        <button class="btn btn--primary btn--lg btn--block" type="button" data-checkout-start>
+          Continuar con el pedido
+          <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+        </button>
+        <button class="link-btn drawer__clear" type="button" data-cart-clear>Vaciar carrito</button>
+      </footer>
+    </section>
 
-    <footer class="drawer__footer" data-cart-footer hidden>
-      <dl class="cart-totals" data-cart-totals></dl>
-      <a class="btn btn--primary btn--lg btn--block" href="#" data-cart-checkout target="_blank" rel="noopener">
-        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a8 8 0 0 1-11.6 7.1L4 20l1.4-4.2A8 8 0 1 1 20 11.5z" /></svg>
-        Pedir por WhatsApp
-      </a>
-      <p class="drawer__note">Te enviaremos el detalle del pedido por WhatsApp. El envío y el pago se coordinan por chat.</p>
-      <button class="link-btn drawer__clear" type="button" data-cart-clear>Vaciar carrito</button>
-    </footer>
+    <!-- Vista 2 · Datos de entrega -->
+    <section class="drawer__view" data-view="details" hidden>
+      <form class="checkout" data-checkout-form novalidate>
+        <div class="drawer__body checkout__body">
+          <div class="form-errors" data-form-errors tabindex="-1" hidden></div>
+
+          <div class="form-field">
+            <label class="form-label" for="co-name">Nombre y apellido</label>
+            <input class="input" id="co-name" name="name" type="text" autocomplete="name" maxlength="80"
+                   aria-required="true" aria-describedby="co-name-error" />
+            <p class="form-error" id="co-name-error" data-error-for="name" hidden></p>
+          </div>
+
+          <fieldset class="form-field">
+            <legend class="form-label">¿Cómo quieres recibirlo?</legend>
+            <div class="choice-list" data-delivery-options></div>
+            <p class="form-error" id="co-delivery-error" data-error-for="delivery" hidden></p>
+          </fieldset>
+
+          <div class="form-group" data-shipping-fields hidden>
+            <div class="form-field">
+              <label class="form-label" for="co-address">Dirección</label>
+              <input class="input" id="co-address" name="address" type="text" autocomplete="street-address"
+                     maxlength="120" placeholder="Calle, número, depto." aria-describedby="co-address-error" />
+              <p class="form-error" id="co-address-error" data-error-for="address" hidden></p>
+            </div>
+            <div class="form-field">
+              <label class="form-label" for="co-city">Comuna o ciudad</label>
+              <input class="input" id="co-city" name="city" type="text" autocomplete="address-level2"
+                     maxlength="60" aria-describedby="co-city-error" />
+              <p class="form-error" id="co-city-error" data-error-for="city" hidden></p>
+            </div>
+            <div class="form-field">
+              <label class="form-label" for="co-reference">Referencia <span class="form-optional">(opcional)</span></label>
+              <input class="input" id="co-reference" name="reference" type="text" maxlength="120"
+                     placeholder="Ej. timbre 3B, portería" />
+            </div>
+          </div>
+
+          <fieldset class="form-field">
+            <legend class="form-label">Medio de pago</legend>
+            <div class="choice-list" data-payment-options></div>
+            <p class="form-error" id="co-payment-error" data-error-for="payment" hidden></p>
+          </fieldset>
+
+          <div class="form-field">
+            <div class="form-label-row">
+              <label class="form-label" for="co-notes">Nota para la tienda <span class="form-optional">(opcional)</span></label>
+              <span class="form-counter" data-notes-counter aria-hidden="true"></span>
+            </div>
+            <textarea class="input input--textarea" id="co-notes" name="notes" rows="3"
+                      placeholder="Ej. es para regalo, ¿pueden envolverlo?" aria-describedby="co-notes-error"></textarea>
+            <p class="form-error" id="co-notes-error" data-error-for="notes" hidden></p>
+          </div>
+
+          <div class="form-field">
+            <label class="check">
+              <input type="checkbox" name="remember" />
+              Recordar mis datos en este dispositivo
+            </label>
+            <p class="form-hint">Tus datos se guardan solo en este navegador y se comparten únicamente en el mensaje que tú envías por WhatsApp.</p>
+          </div>
+        </div>
+
+        <footer class="drawer__footer">
+          <p class="checkout-preview" data-checkout-preview></p>
+          <button class="btn btn--primary btn--lg btn--block" type="submit">Revisar pedido</button>
+        </footer>
+      </form>
+    </section>
+
+    <!-- Vista 3 · Revisión -->
+    <section class="drawer__view" data-view="review" hidden>
+      <div class="drawer__body checkout__body" data-review-body></div>
+      <footer class="drawer__footer">
+        <a class="btn btn--primary btn--lg btn--block" href="#" data-checkout-send target="_blank" rel="noopener">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a8 8 0 0 1-11.6 7.1L4 20l1.4-4.2A8 8 0 1 1 20 11.5z" /></svg>
+          Enviar pedido por WhatsApp
+        </a>
+        <p class="drawer__note" data-checkout-no-whatsapp hidden>Esta tienda aún no configuró su WhatsApp.</p>
+        <p class="drawer__note">Pedido N.º <strong data-order-id></strong> · Se abrirá WhatsApp con el mensaje listo: solo tienes que enviarlo.</p>
+      </footer>
+    </section>
+
+    <!-- Vista 4 · Pedido listo -->
+    <section class="drawer__view" data-view="sent" hidden>
+      <div class="drawer__body">
+        <div class="checkout-done">
+          <span class="checkout-done__icon">
+            <svg class="icon icon--lg" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>
+          </span>
+          <h3>Tu pedido está listo en WhatsApp</h3>
+          <p class="text-muted">Envía el mensaje para confirmarlo. Te responderemos con la disponibilidad y el total final.</p>
+          <p class="checkout-done__id">Pedido N.º <strong data-order-id></strong></p>
+          <a class="btn btn--ghost" href="#" data-checkout-resend target="_blank" rel="noopener">¿No se abrió? Abrir WhatsApp de nuevo</a>
+        </div>
+      </div>
+      <footer class="drawer__footer">
+        <button class="btn btn--primary btn--lg btn--block" type="button" data-checkout-finish>Ya lo envié: vaciar carrito</button>
+        <button class="link-btn drawer__clear" type="button" data-checkout-back-to-cart>Volver al carrito</button>
+      </footer>
+    </section>
 
     <p class="sr-only" aria-live="polite" data-cart-status></p>
   </dialog>

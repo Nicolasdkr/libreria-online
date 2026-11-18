@@ -52,6 +52,34 @@ categories: [
 
 Puedes tener de 1 a 6 categorías; la grilla se adapta sola.
 
+### Checkout: entrega, pago y número de pedido
+
+```js
+checkout: {
+  orderPrefix: 'TV',
+  delivery: {
+    pickup:   { enabled: true, label: 'Retiro en tienda', note: '' },
+    shipping: { enabled: true, label: 'Despacho a domicilio', cost: 3990, note: 'Región Metropolitana · 24 a 48 horas hábiles' },
+  },
+  paymentMethods: [
+    { id: 'transferencia', label: 'Transferencia bancaria', note: 'Te enviamos los datos por WhatsApp' },
+    { id: 'efectivo', label: 'Efectivo', note: 'Solo al retirar en tienda', pickupOnly: true },
+  ],
+  notesMaxLength: 300,
+}
+```
+
+| Clave | Descripción |
+| --- | --- |
+| `orderPrefix` | Prefijo del número de pedido. Con `'TV'` los pedidos se ven como `TV-261118-4K7Q` (fecha y cuatro caracteres sin letras ambiguas, fáciles de dictar). |
+| `delivery.pickup` | Retiro en tienda. Si `note` está vacío, se muestra `contact.address`. |
+| `delivery.shipping` | Despacho. `cost` es un monto fijo; desde `commerce.freeShippingThreshold` el despacho es gratis. |
+| `enabled` | Activa o desactiva cada forma de entrega. Si solo hay una activa, queda preseleccionada. |
+| `paymentMethods` | Medios de pago en el orden en que se muestran. `pickupOnly: true` lo oculta cuando el cliente elige despacho. |
+| `notesMaxLength` | Largo máximo de la nota opcional para la tienda. |
+
+Debe haber al menos una forma de entrega y un medio de pago activos; si no, la consola muestra un aviso. El checkout no cobra: el mensaje de WhatsApp lleva el pedido y la tienda confirma el total y el pago por chat.
+
 ---
 
 ## 2. Catálogo
@@ -148,6 +176,8 @@ Hay textos que van directamente en el HTML porque los buscadores y las redes soc
 - [ ] `demo.enabled: false` en `store.config.js`.
 - [ ] WhatsApp real, probado desde un celular con un pedido de prueba desde el carrito.
 - [ ] Monto de envío gratis real, o `freeShippingThreshold: null` si no aplica.
+- [ ] Formas de entrega, costo de despacho y medios de pago reales en `checkout`.
+- [ ] Pedido de prueba completo: con retiro, con despacho y con un error a propósito en el formulario.
 - [ ] Correo, dirección y horario reales (o vacíos).
 - [ ] Moneda y formato regional correctos.
 - [ ] Productos de ejemplo reemplazados y JSON validado.

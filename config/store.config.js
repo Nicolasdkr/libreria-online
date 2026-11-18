@@ -59,6 +59,31 @@ export default {
     ],
   },
 
+  /** Checkout: formas de entrega, medios de pago y número de pedido */
+  checkout: {
+    orderPrefix: 'TV', // los pedidos se numeran como TV-261118-4K7Q
+
+    delivery: {
+      // `note` vacío en retiro = se muestra contact.address
+      pickup: { enabled: true, label: 'Retiro en tienda', note: '' },
+      shipping: {
+        enabled: true,
+        label: 'Despacho a domicilio',
+        cost: 3990, // costo fijo; es gratis desde commerce.freeShippingThreshold
+        note: 'Región Metropolitana · 24 a 48 horas hábiles',
+      },
+    },
+
+    // `pickupOnly: true` = solo disponible con retiro en tienda
+    paymentMethods: [
+      { id: 'transferencia', label: 'Transferencia bancaria', note: 'Te enviamos los datos por WhatsApp' },
+      { id: 'tarjeta', label: 'Tarjeta de débito o crédito', note: 'Te enviamos un link de pago' },
+      { id: 'efectivo', label: 'Efectivo', note: 'Solo al retirar en tienda', pickupOnly: true },
+    ],
+
+    notesMaxLength: 300,
+  },
+
   /**
    * Modo demostración: muestra una barra superior avisando que los datos son ficticios.
    * Pon `enabled: false` al publicar una tienda real.

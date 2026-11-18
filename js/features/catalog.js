@@ -2,7 +2,7 @@
  * features/catalog.js — Renderizado del catálogo: tarjetas, skeletons, estados y categorías.
  *
  * Es una capa de presentación pura: recibe datos y dibuja. No decide QUÉ productos
- * mostrar (eso es lib/filtering.js) ni maneja el carrito (eso es features/cart.js,
+ * mostrar (eso es lib/filtering.js) ni maneja el carrito (eso es features/cart/,
  * que lee los atributos data-add-to-cart de cada tarjeta).
  */
 import { CONFIG } from '../core/config.js';

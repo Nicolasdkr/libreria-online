@@ -16,7 +16,7 @@ import { initStoreInfo } from './features/store-info.js';
 import { initTheme } from './features/theme.js';
 import { initNav } from './features/nav.js';
 import { createFilterBar } from './features/filters.js';
-import { createCartUI } from './features/cart.js';
+import { createCartUI } from './features/cart/index.js';
 import { showToast, ensureToastRegion } from './ui/toast.js';
 import {
   renderSkeletons,

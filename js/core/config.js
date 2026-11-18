@@ -24,6 +24,15 @@ const DEFAULTS = {
     priceFilterStep: 1000,
     categories: [],
   },
+  checkout: {
+    orderPrefix: 'PED',
+    notesMaxLength: 300,
+    delivery: {
+      pickup: { enabled: true, label: 'Retiro en tienda', note: '' },
+      shipping: { enabled: false, label: 'Despacho a domicilio', cost: 0, note: '' },
+    },
+    paymentMethods: [{ id: 'transferencia', label: 'Transferencia bancaria' }],
+  },
   demo: { enabled: false, message: '', ctaLabel: '', ctaUrl: '' },
   credits: { enabled: false, label: '', name: '', url: '' },
 };
@@ -33,8 +42,10 @@ const DEFAULTS = {
  * (que evita el destello de tema) necesita conocer la del tema.
  */
 export const STORAGE_KEYS = Object.freeze({
-  theme: 'storefront.theme',
-  cart: 'storefront.cart',
+  theme: 'storefront.theme', // localStorage
+  cart: 'storefront.cart', // localStorage
+  customer: 'storefront.customer', // localStorage, solo si el cliente marca "Recordar mis datos"
+  checkoutDraft: 'storefront.checkout-draft', // sessionStorage
 });
 
 const isPlainObject = (value) =>
@@ -67,6 +78,13 @@ function validate(config) {
   }
   if (!config.catalog.categories.length) {
     warn('catalog.categories está vacío: no se mostrarán categorías.');
+  }
+  const { pickup, shipping } = config.checkout.delivery;
+  if (!pickup.enabled && !shipping.enabled) {
+    warn('checkout.delivery: activa al menos una forma de entrega (pickup o shipping).');
+  }
+  if (!config.checkout.paymentMethods.length) {
+    warn('checkout.paymentMethods está vacío: el cliente no podrá elegir medio de pago.');
   }
   try {
     new Intl.NumberFormat(config.commerce.locale, { style: 'currency', currency: config.commerce.currency });
