@@ -11,7 +11,13 @@ const DEFAULTS = {
   brand: { name: 'Mi Librería', tagline: '' },
   contact: { whatsapp: '', email: '', address: '' },
   hours: [],
-  commerce: { locale: 'es-CL', currency: 'CLP', lowStockThreshold: 3 },
+  commerce: {
+    locale: 'es-CL',
+    currency: 'CLP',
+    lowStockThreshold: 3,
+    maxQuantityPerItem: 10,
+    freeShippingThreshold: null,
+  },
   catalog: {
     productsUrl: 'data/products.json',
     newArrivalsLimit: 8,

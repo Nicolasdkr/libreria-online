@@ -7,8 +7,28 @@ El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y e
 ## [Unreleased]
 
 ### Planificado
-- Carrito persistente con sincronización entre pestañas (0.6).
-- Checkout con pedido redactado a WhatsApp (0.7).
+- Checkout con datos del cliente, retiro o despacho, y resumen del pedido (0.7).
+
+## [0.6.0] - 2026-11-18
+
+### Agregado
+- **Carrito persistente** guardado en `localStorage`: sobrevive a recargas y se sincroniza en vivo entre pestañas.
+- **Panel lateral del carrito** con `<dialog>` nativo: foco atrapado, cierre con Esc o clic en el fondo, y animaciones que respetan `prefers-reduced-motion`.
+- Selector de cantidad por producto con tope según stock y `maxQuantityPerItem`. El "−" se convierte en "quitar" en la última unidad.
+- Quitar productos y vaciar el carrito con opción de **deshacer**.
+- Totales con ahorro en ofertas y **barra de progreso hacia el envío gratis**.
+- **Pedido rápido por WhatsApp**: el mensaje incluye productos, autores, cantidades, total y ahorro.
+- Botones "Agregar" conectados: confirmación "¡Agregado!", burbuja con las unidades en el carrito y estado "Máximo" al llegar al stock.
+- Ajuste automático del carrito guardado si un producto se agota o baja su stock, con aviso al cliente.
+- Sistema de **avisos (toasts)** reutilizable: acción opcional, pausa con mouse o foco, máximo tres visibles y región `aria-live`.
+- Estado vacío del carrito con acceso directo al catálogo, y contador del header con animación.
+- `js/lib/cart.js` (modelo inmutable), `js/lib/order.js` (mensaje) y `js/core/cart-store.js` (estado y persistencia).
+- `js/ui/`: iconos, portadas y avisos compartidos entre features.
+- 23 tests nuevos (43 en total) para el carrito y el mensaje del pedido.
+- Opciones `commerce.maxQuantityPerItem` y `commerce.freeShippingThreshold` en la configuración.
+
+### Cambiado
+- La portada y los iconos se movieron de `features/catalog.js` a `js/ui/` para reutilizarlos en el carrito.
 
 ## [0.5.0] - 2026-11-17
 
@@ -68,7 +88,8 @@ El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y e
 - Estructura base, HTML semántico y SEO básico.
 - Design tokens y modo claro/oscuro persistente sin destello al cargar.
 
-[Unreleased]: https://github.com/Nicolasdkr/libreria-online/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/Nicolasdkr/libreria-online/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/Nicolasdkr/libreria-online/releases/tag/v0.6.0
 [0.5.0]: https://github.com/Nicolasdkr/libreria-online/releases/tag/v0.5.0
 [0.4.0]: https://github.com/Nicolasdkr/libreria-online/releases/tag/v0.4.0
 [0.3.0]: https://github.com/Nicolasdkr/libreria-online/commit/035da45

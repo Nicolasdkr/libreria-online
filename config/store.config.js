@@ -39,6 +39,8 @@ export default {
     locale: 'es-CL', // formato de números y fechas (BCP 47)
     currency: 'CLP', // código ISO 4217
     lowStockThreshold: 3, // desde cuántas unidades se muestra "¡Quedan N!"
+    maxQuantityPerItem: 10, // tope de unidades por producto en el carrito (además del stock)
+    freeShippingThreshold: 30000, // monto para envío gratis (barra de progreso). null = no mostrar
   },
 
   /** Catálogo */

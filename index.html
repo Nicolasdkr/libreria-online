@@ -8,7 +8,7 @@
        por eso se editan aquí y no en store.config.js (ver docs/CUSTOMIZATION.md) -->
   <title>Tinta &amp; Viñeta · Librería y Cómics Online</title>
   <meta name="description" content="Librería online de libros, manga, cómics y novela gráfica. Explora el catálogo, arma tu carrito y haz tu pedido por WhatsApp." />
-  <meta name="generator" content="Librería Online Storefront 0.5.0" />
+  <meta name="generator" content="Librería Online Storefront 0.6.0" />
   <meta name="theme-color" content="#faf7f2" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#14120f" media="(prefers-color-scheme: dark)" />
 
@@ -39,6 +39,7 @@
   <link rel="stylesheet" href="css/layout.css" />
   <link rel="stylesheet" href="css/components.css" />
   <link rel="stylesheet" href="css/catalog.css" />
+  <link rel="stylesheet" href="css/cart.css" />
   <link rel="stylesheet" href="css/utilities.css" />
 
   <script type="module" src="js/app.js"></script>
@@ -94,7 +95,7 @@
           </svg>
         </button>
 
-        <button class="icon-btn cart-btn" type="button" data-cart-open aria-label="Abrir carrito (vacío)">
+        <button class="icon-btn cart-btn" type="button" data-cart-open aria-haspopup="dialog" aria-controls="cart-drawer" aria-label="Abrir carrito (vacío)">
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M5 7h14l-1.2 11.1a2 2 0 0 1-2 1.9H8.2a2 2 0 0 1-2-1.9z" />
             <path d="M9 7V6a3 3 0 0 1 6 0v1" />
@@ -293,5 +294,31 @@
       <p data-credits></p>
     </div>
   </footer>
+
+  <!-- ======================== CARRITO (panel lateral) ========================
+       <dialog> modal: atrapa el foco, cierra con Esc y deja la página inerte de forma nativa -->
+  <dialog class="drawer" id="cart-drawer" data-cart-drawer aria-labelledby="cart-title">
+    <header class="drawer__header">
+      <h2 class="drawer__title" id="cart-title">Tu carrito <span class="drawer__count" data-cart-drawer-count></span></h2>
+      <button class="icon-btn" type="button" data-cart-close aria-label="Cerrar carrito">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+      </button>
+    </header>
+
+    <div class="drawer__shipping" data-cart-shipping></div>
+    <div class="drawer__body" data-cart-items></div>
+
+    <footer class="drawer__footer" data-cart-footer hidden>
+      <dl class="cart-totals" data-cart-totals></dl>
+      <a class="btn btn--primary btn--lg btn--block" href="#" data-cart-checkout target="_blank" rel="noopener">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a8 8 0 0 1-11.6 7.1L4 20l1.4-4.2A8 8 0 1 1 20 11.5z" /></svg>
+        Pedir por WhatsApp
+      </a>
+      <p class="drawer__note">Te enviaremos el detalle del pedido por WhatsApp. El envío y el pago se coordinan por chat.</p>
+      <button class="link-btn drawer__clear" type="button" data-cart-clear>Vaciar carrito</button>
+    </footer>
+
+    <p class="sr-only" aria-live="polite" data-cart-status></p>
+  </dialog>
 </body>
 </html>

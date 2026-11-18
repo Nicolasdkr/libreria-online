@@ -1,18 +1,23 @@
 /**
  * app.js — Punto de entrada de la aplicación.
  *
- * Inicializa cada feature y es la única fuente de verdad del estado compartido
- * (catálogo y filtros). Los módulos de features no se conocen entre sí: avisan
- * de los cambios con callbacks y este archivo decide qué volver a dibujar.
+ * Inicializa cada feature y coordina el estado compartido: catálogo y filtros
+ * viven aquí; el carrito, en core/cart-store.js. Los módulos de features no se
+ * conocen entre sí: avisan de los cambios con callbacks y este archivo decide
+ * qué volver a dibujar.
  *
  *   interacción ─► setFilters(patch) ─► state ─► URL + updateCatalog()
+ *   "Agregar"   ─► cartStore.add(id)  ─► localStorage + suscriptores (cart UI)
  */
 import { CONFIG } from './core/config.js';
 import { fetchProducts } from './core/api.js';
+import { createCartStore } from './core/cart-store.js';
 import { initStoreInfo } from './features/store-info.js';
 import { initTheme } from './features/theme.js';
 import { initNav } from './features/nav.js';
 import { createFilterBar } from './features/filters.js';
+import { createCartUI } from './features/cart.js';
+import { showToast, ensureToastRegion } from './ui/toast.js';
 import {
   renderSkeletons,
   renderProducts,
@@ -48,7 +53,10 @@ const state = {
   filters: parseFilters(window.location.search, { categories: CATEGORY_IDS }),
 };
 
+const cartStore = createCartStore();
+
 let filterBar = null;
+let cartUI = null;
 
 /* ------------------------------- Filtros ------------------------------- */
 
@@ -107,6 +115,7 @@ function updateCatalog() {
   renderProducts(dom.grid, list, {
     emptyAction: { label: 'Limpiar filtros', onAction: resetFilters },
   });
+  cartUI?.syncAddButtons(dom.grid);
   dom.count.textContent = resultsText(list.length);
 }
 
@@ -119,6 +128,22 @@ function renderNewArrivals() {
   const list = [...byDate.filter(isNew), ...byDate.filter((product) => !isNew(product))];
 
   renderProducts(dom.newArrivals, list.slice(0, CONFIG.catalog.newArrivalsLimit));
+  cartUI?.syncAddButtons(dom.newArrivals);
+}
+
+/** Avisa si el carrito guardado se ajustó porque cambió el stock del catálogo. */
+function notifyCartChanges(changes) {
+  if (!changes.length) return;
+
+  const [first] = changes;
+  const message =
+    changes.length === 1 && first.product
+      ? first.to === 0
+        ? `«${first.product.title}» se agotó y lo quitamos de tu carrito.`
+        : `Solo ${first.to === 1 ? 'queda 1 unidad' : `quedan ${first.to} unidades`} de «${first.product.title}»: ajustamos tu carrito.`
+      : 'Actualizamos tu carrito: algunos productos cambiaron de disponibilidad.';
+
+  showToast({ message, variant: 'warning', duration: 8000 });
 }
 
 async function loadCatalog() {
@@ -130,6 +155,9 @@ async function loadCatalog() {
   try {
     state.products = await fetchProducts();
     state.status = 'ready';
+
+    // El carrito guardado se revalida contra el stock real antes de mostrarse
+    notifyCartChanges(cartStore.setProducts(state.products));
 
     // El rango del slider depende del catálogo real
     const bounds = priceBounds(state.products, CONFIG.catalog.priceFilterStep);
@@ -203,9 +231,11 @@ function initCatalog() {
 }
 
 function init() {
+  ensureToastRegion(); // la región aria-live debe existir antes del primer aviso
   initStoreInfo();
   initTheme(document.querySelector('[data-theme-toggle]'));
   initNav();
+  cartUI = createCartUI({ store: cartStore, onBrowse: scrollToCatalog });
   initCatalog();
 }
 

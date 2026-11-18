@@ -29,6 +29,8 @@ Todo valor que no definas toma un valor por defecto, y si algo está mal escrito
 | `commerce.locale` | texto | Formato regional de los números: `es-CL`, `es-AR`, `es-MX`, `es-ES`… |
 | `commerce.currency` | texto | Código ISO 4217 de la moneda: `CLP`, `ARS`, `MXN`, `EUR`, `USD`… |
 | `commerce.lowStockThreshold` | número | Desde cuántas unidades se muestra el aviso "¡Quedan N!". |
+| `commerce.maxQuantityPerItem` | número | Máximo de unidades de un mismo producto en el carrito (además del stock). |
+| `commerce.freeShippingThreshold` | número o `null` | Monto desde el que el envío es gratis; muestra una barra de progreso en el carrito. Con `null` no se muestra. |
 | `catalog.productsUrl` | texto | Ruta o URL del catálogo en JSON. |
 | `catalog.newArrivalsLimit` | número | Cantidad de productos en la sección Novedades. |
 | `catalog.priceFilterStep` | número | Salto del filtro de precio máximo: `1000` para CLP o ARS, `1` para USD o EUR. |
@@ -77,13 +79,13 @@ Es una lista de productos. Cada uno tiene esta forma:
 
 | Campo | Obligatorio | Descripción |
 | --- | --- | --- |
-| `id` | ✅ | Identificador único. No lo cambies una vez publicado, porque los carritos guardados lo usan. |
+| `id` | ✅ | Identificador único. No lo cambies una vez publicado: los carritos guardados en el navegador de tus clientes lo usan, y un id nuevo los dejaría sin ese producto. |
 | `title` | ✅ | Título del producto. |
 | `category` | ✅ | Debe coincidir con el `id` de una categoría de la configuración. |
 | `price` | ✅ | Precio como número, **sin puntos ni símbolo**: `18990`, no `"$18.990"`. |
 | `author` | | Autor, autora o editorial. |
 | `oldPrice` | | Precio anterior. Si es mayor que `price`, se muestra tachado con el porcentaje de descuento. |
-| `stock` | | Unidades disponibles. Con `0` el producto aparece como **Agotado** y no se puede agregar al carrito. |
+| `stock` | | Unidades disponibles. Con `0` el producto aparece como **Agotado** y no se puede agregar al carrito. Si un cliente ya lo tenía en su carrito, se quita automáticamente con un aviso. |
 | `cover` | | Ruta de la imagen de portada, por ejemplo `assets/img/covers/lib-001.webp`. Con `null` se genera una portada con CSS. |
 | `hue` | | Tono de la portada generada (0–360). |
 | `tags` | | Etiquetas: `"nuevo"` y `"mas-vendido"`. La etiqueta de oferta se calcula sola a partir de `oldPrice`. |
@@ -144,7 +146,8 @@ Hay textos que van directamente en el HTML porque los buscadores y las redes soc
 ## 5. Revisión antes de publicar
 
 - [ ] `demo.enabled: false` en `store.config.js`.
-- [ ] WhatsApp real, probado desde un celular.
+- [ ] WhatsApp real, probado desde un celular con un pedido de prueba desde el carrito.
+- [ ] Monto de envío gratis real, o `freeShippingThreshold: null` si no aplica.
 - [ ] Correo, dirección y horario reales (o vacíos).
 - [ ] Moneda y formato regional correctos.
 - [ ] Productos de ejemplo reemplazados y JSON validado.

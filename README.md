@@ -8,7 +8,7 @@ Sin backend, sin comisiones por venta, sin dependencias. Se configura en tres ar
 
 [**Ver demo en vivo**](https://nicolasdkr.github.io/libreria-online/) · [Guía de personalización](docs/CUSTOMIZATION.md) · [Arquitectura](docs/ARCHITECTURE.md) · [Despliegue](docs/DEPLOYMENT.md)
 
-![Versión](https://img.shields.io/badge/versión-0.5.0-c8402a)
+![Versión](https://img.shields.io/badge/versión-0.6.0-c8402a)
 ![Licencia](https://img.shields.io/badge/licencia-uso%20comercial%20con%20permiso-1f4e79)
 ![Dependencias](https://img.shields.io/badge/dependencias-0-2f7d4f)
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
@@ -42,6 +42,11 @@ La demo usa la marca ficticia **Tinta & Viñeta**: todo su contenido (nombre, pr
 - **Búsqueda en tiempo real** por título o autor que ignora tildes y mayúsculas y acepta palabras en cualquier orden.
 - **Filtros combinables**: categoría, orden, precio máximo y solo disponibles, con contador de resultados.
 - **Búsquedas compartibles**: los filtros viven en la URL (`?cat=manga&q=frieren`), así cualquier búsqueda se puede enviar por enlace.
+- **Carrito persistente** en un panel lateral accesible: sobrevive a recargas, se sincroniza entre pestañas y respeta el stock disponible.
+- **Edición del carrito sin fricción**: cambiar cantidades, quitar o vaciar con opción de **deshacer**, ahorro en ofertas y barra de progreso hacia el envío gratis.
+- **Pedido por WhatsApp** con el detalle del carrito ya redactado (productos, cantidades, total y ahorro).
+- **Carrito siempre al día**: si un producto guardado se agota o baja su stock, el carrito se ajusta solo y avisa al cliente.
+- **Avisos no intrusivos** (toasts) con acciones, pausa al pasar el mouse y anuncio para lectores de pantalla.
 - **Sección de novedades** en un carril horizontal con scroll-snap.
 - **Modo claro y oscuro** que respeta la preferencia del sistema, recuerda la elección y no produce destello al cargar.
 - **Diseño responsivo**: el header se adapta a móvil con menú hamburguesa y las tarjetas se ajustan a su propio ancho (container queries).
@@ -50,7 +55,7 @@ La demo usa la marca ficticia **Tinta & Viñeta**: todo su contenido (nombre, pr
 - **Modo demo** activable desde la configuración, para mostrar la tienda a clientes antes de publicarla.
 - **Accesibilidad**: HTML semántico, navegación por teclado, foco visible, textos para lectores de pantalla y soporte de `prefers-reduced-motion`.
 
-**En desarrollo:** carrito persistente y checkout por WhatsApp. Ver el [roadmap](#roadmap).
+**En desarrollo:** formulario de checkout con datos de entrega. Ver el [roadmap](#roadmap).
 
 ## Inicio rápido
 
@@ -58,7 +63,7 @@ La demo usa la marca ficticia **Tinta & Viñeta**: todo su contenido (nombre, pr
 git clone https://github.com/Nicolasdkr/libreria-online.git
 cd libreria-online
 npm run dev        # o: npx serve .
-npm test           # tests de la lógica de filtros (Node 20 o superior)
+npm test           # tests de filtros, carrito y pedido (Node 20 o superior)
 ```
 
 Abre `http://localhost:3000`. No hay paso de instalación ni de compilación, y los tests usan el test runner que trae Node, sin dependencias.
@@ -93,13 +98,15 @@ La guía completa, con el esquema de productos y la lista de revisión previa a 
 │   ├── base.css               Reset y tipografía
 │   ├── layout.css             Header, hero, contacto, footer
 │   ├── components.css         Botones, badges, portadas
-│   ├── catalog.css            Categorías, tarjetas, skeletons
+│   ├── catalog.css            Categorías, filtros, tarjetas, skeletons
+│   ├── cart.css               Panel del carrito
 │   └── utilities.css          Helpers de layout
 ├── js/
-│   ├── app.js                 Punto de entrada y estado compartido
-│   ├── core/                  Configuración, datos y almacenamiento
-│   ├── features/              Catálogo, filtros, tema, navegación, datos de la tienda
-│   └── lib/                   Lógica pura: filtros, formato, escape, debounce
+│   ├── app.js                 Punto de entrada y coordinación
+│   ├── core/                  Configuración, datos, almacenamiento y estado del carrito
+│   ├── features/              Catálogo, filtros, carrito, tema, navegación
+│   ├── ui/                    Piezas visuales compartidas: iconos, portadas, avisos
+│   └── lib/                   Lógica pura: filtros, carrito, pedido, formato
 ├── tests/                     Tests con node:test
 ├── assets/                    Favicon e imágenes
 └── docs/                      Documentación técnica y de personalización
@@ -109,7 +116,8 @@ La guía completa, con el esquema de productos y la lista de revisión previa a 
 
 - **Sin framework ni build.** HTML, CSS y JavaScript estándar con ES Modules. Carga rápido, se publica en cualquier hosting estático y cualquier desarrollador web puede mantenerlo.
 - **Capas separadas.** `core` resuelve datos y configuración, `features` dibuja la interfaz y `app.js` las coordina. Cambiar la fuente de datos (API, CMS o planilla) implica modificar un solo archivo.
-- **Lógica testeable.** Filtrar, ordenar y leer o escribir la URL son funciones puras en `js/lib/filtering.js`, cubiertas por tests que corren en cada despliegue.
+- **Lógica testeable.** Filtros, carrito y redacción del pedido son funciones puras en `js/lib/`, cubiertas por 43 tests que corren en cada despliegue.
+- **El carrito guarda solo ids y cantidades.** Precios, títulos y stock siempre se leen del catálogo vigente, así un carrito guardado hace días nunca muestra un precio desactualizado.
 - **Configuración validada.** `store.config.js` se mezcla con valores por defecto, se valida (con avisos claros en consola) y se congela para que ningún módulo la altere.
 - **Seguro por defecto.** Todo dato del catálogo se escapa antes de insertarse en el HTML, y el acceso a `localStorage` está protegido para navegadores que lo bloquean.
 - **Tokens de diseño.** Toda la identidad visual son variables CSS: cambiar la marca no requiere buscar colores en todo el código.
@@ -127,8 +135,8 @@ Navegadores modernos (últimas dos versiones de Chrome, Edge, Firefox y Safari, 
 | 0.1 – 0.3 | Base, layout responsivo, catálogo dinámico, categorías | ✅ |
 | 0.4 | Estructura de producto: configuración central, tokens, modo demo, documentación | ✅ |
 | 0.5 | Búsqueda en tiempo real, filtros combinables, URL compartible y tests | ✅ |
-| 0.6 | Carrito persistente con sincronización entre pestañas | 🔜 |
-| 0.7 | Checkout con pedido redactado a WhatsApp | 🔜 |
+| 0.6 | Carrito persistente, panel lateral, avisos con deshacer y pedido rápido por WhatsApp | ✅ |
+| 0.7 | Checkout con datos del cliente, retiro o despacho, y resumen del pedido | 🔜 |
 | 0.8 | Modal de detalle de producto, toasts y pulido de accesibilidad | 🔜 |
 | 1.0 | Auditoría de rendimiento y accesibilidad, capturas y primera versión estable | 🔜 |
 

@@ -19,24 +19,35 @@ js/core/config.js               Mezcla con valores por defecto → valida → co
         │
         ├──────────────► js/lib/*               Lógica pura, sin DOM (cubierta por tests/)
         │                  ├─ utils.js          Formato de precio, escape, normalización, debounce
-        │                  └─ filtering.js      Filtrar, ordenar, leer y escribir filtros en la URL
+        │                  ├─ filtering.js      Filtrar, ordenar, leer y escribir filtros en la URL
+        │                  ├─ cart.js           Modelo inmutable del carrito, totales, ajuste al stock
+        │                  └─ order.js          Redacción del pedido para WhatsApp
         │
-        ├──────────────► js/core/api.js         fetchProducts(): obtiene y valida el catálogo
+        ├──────────────► js/core/*              Datos y estado
+        │                  ├─ api.js            fetchProducts(): obtiene y valida el catálogo
+        │                  ├─ storage.js        localStorage seguro
+        │                  └─ cart-store.js     Estado del carrito: persistencia, pestañas, suscripción
+        │
+        ├──────────────► js/ui/*                Piezas visuales compartidas entre features
+        │                  ├─ icons.js          Iconos SVG
+        │                  ├─ cover.js          Portada (imagen o generada) y respaldo si falla
+        │                  └─ toast.js          Avisos con acción ("Deshacer", "Ver carrito")
         │
         └──────────────► js/features/*          Presentación e interacción
                            ├─ store-info.js     Vuelca nombre, contacto y horario en el DOM
                            ├─ theme.js          Modo claro/oscuro
                            ├─ nav.js            Menú móvil, sombra del header, sección activa
                            ├─ filters.js        Barra de filtros (chips, orden, precio, stock)
-                           └─ catalog.js        Tarjetas, categorías, skeletons, estados
+                           ├─ catalog.js        Tarjetas, categorías, skeletons, estados
+                           └─ cart.js           Panel del carrito, contador, botones "Agregar"
 
 js/app.js                       Punto de entrada: inicializa features y guarda el estado compartido
 ```
 
 ### Reglas de dependencia
 
-- `core/` y `lib/` **nunca** importan desde `features/`.
-- Los módulos de `features/` **no se importan entre sí**: se comunican a través de `app.js`.
+- `core/`, `lib/` y `ui/` **nunca** importan desde `features/`.
+- Los módulos de `features/` **no se importan entre sí**: se comunican a través de `app.js`. Lo que dos features necesitan dibujar igual (iconos, portadas, avisos) vive en `ui/`.
 - Solo `core/config.js` importa `config/store.config.js`. El resto usa `CONFIG`.
 - `catalog.js` y `filters.js` son presentación: dibujan y avisan de las interacciones con callbacks. Decidir *qué* productos mostrar es tarea de `lib/filtering.js`, y `app.js` lo coordina.
 
@@ -74,6 +85,32 @@ js/app.js                       Punto de entrada: inicializa features y guarda e
 | `stock` | `stock=1` | Solo productos disponibles |
 
 Los valores por defecto no se escriben en la URL, y los inválidos se ignoran. Se usa `history.replaceState` para no llenar el historial con cada tecla.
+
+## Carrito
+
+```
+ "Agregar" · "+" · "−" · Quitar · Vaciar · Deshacer
+                       │
+                       ▼
+            cartStore.add / setQuantity / remove / clear / restore   (core/cart-store.js)
+                       │
+          ┌────────────┼──────────────────────────┐
+          ▼            ▼                          ▼
+   lib/cart.js    localStorage            suscriptores: features/cart.js
+  (nuevo estado)  (storefront.cart)       (contador, panel, botones "Agregar")
+                       │
+                       ▼
+          evento `storage` en otras pestañas ─► se recarga y vuelve a notificar
+```
+
+Decisiones de diseño:
+
+- **Solo se guardan ids y cantidades.** Al cargar, `summarize()` toma precios, títulos y stock del catálogo vigente. Un precio modificado se refleja de inmediato en todos los carritos guardados.
+- **Ajuste al stock.** Cuando llega el catálogo, `reconcile()` quita productos agotados o eliminados y recorta cantidades que superan el stock o `maxQuantityPerItem`. `app.js` informa al cliente con un aviso.
+- **Deshacer sin complejidad extra.** Como el modelo es inmutable, `remove()` y `clear()` devuelven el carrito anterior, y `restore(snapshot)` lo vuelve a aplicar, revalidado contra el stock actual.
+- **Formato versionado.** Lo guardado incluye `version`. Si el formato cambia, `parseCart()` descarta o migra los datos antiguos en vez de romper la página.
+- **Panel con `<dialog>` nativo.** `showModal()` atrapa el foco, cierra con Esc y deja el resto de la página inerte sin código adicional. Por eso los avisos se insertan dentro del panel cuando está abierto: fuera de él no se podrían pulsar.
+- **Foco estable al volver a dibujar.** Antes de redibujar las líneas, el panel recuerda qué control tenía el foco y lo restaura. Si la línea desapareció, mueve el foco a la siguiente.
 
 ## Tests
 
@@ -160,6 +197,6 @@ El resto de la aplicación no cambia.
 | Clave | Contenido | Módulo |
 | --- | --- | --- |
 | `storefront.theme` | `"light"` o `"dark"` | `features/theme.js` y el script inline de `index.html` |
-| `storefront.cart` | Carrito (a partir de la 0.6) | — |
+| `storefront.cart` | `{ version, items: [{ id, qty }] }` | `core/cart-store.js` |
 
 Todo acceso pasa por `core/storage.js`, que absorbe los errores del navegador.
